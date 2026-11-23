@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17324d">
+<title>Simulado – Fundamentos de Enfermagem</title>
+<style>
+:root{--ink:#172536;--muted:#617184;--line:#d9e1e8;--bg:#f3f6f9;--card:#fff;--accent:#175a86;--soft:#eaf2f8;--good:#176b43;--bad:#a52d35}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:#17324d;color:white;padding:22px 16px 18px}header .wrap,main{max-width:850px;margin:auto}
+h1{font-size:1.45rem;line-height:1.2;margin:0 0 7px}header p{margin:0;color:#dce8f1;font-size:.95rem}
+main{padding:16px 12px 48px}.panel,.question,.result{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #132b3c0a}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.timer{font-variant-numeric:tabular-nums;font-size:1.7rem;font-weight:800;letter-spacing:.03em}
+.timer.warn{color:var(--bad)}.small{font-size:.9rem;color:var(--muted)}
+button{border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:white}
+button.secondary{background:var(--soft);color:var(--accent)}button:disabled{opacity:.45;cursor:not-allowed}
+.progress{height:8px;background:#e5ebf0;border-radius:20px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:#2677a8;transition:width .2s}
+.qhead{font-weight:750;margin:0 0 12px}.options{display:grid;gap:8px}
+label.option{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+label.option:has(input:checked){border-color:var(--accent);background:var(--soft)}
+input{accent-color:var(--accent);margin-top:4px;flex:0 0 auto}
+.actions{display:flex;gap:10px;flex-wrap:wrap}.sticky{position:sticky;bottom:0;background:#f3f6f9ed;padding:10px 0 calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(8px)}
+.hidden{display:none}.feedback{margin-top:10px;padding:11px;border-radius:9px;background:#f0f3f6;font-size:.93rem}
+.correct{color:var(--good);font-weight:800}.incorrect{color:var(--bad);font-weight:800}
+.result h2{margin-top:0}.tag{display:inline-block;padding:3px 8px;border-radius:20px;background:var(--soft);color:var(--accent);font-size:.8rem;font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px}
+@media(min-width:650px){main{padding-top:22px}.question{padding:20px}.timer{font-size:2rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Simulado – Fundamentos de Enfermagem</h1><p>30 questões • 45 minutos • Técnico de Enfermagem</p></div></header>
+<main>
+<section class="panel" id="intro">
+ <div class="top"><div><span class="tag">Prova de treino</span><h2 style="margin:8px 0 3px">Antes de começar</h2></div><div class="timer" id="preview">45:00</div></div>
+ <p>O cronômetro começa quando você tocar em <b>Iniciar prova</b>. Responda às questões e finalize antes do tempo acabar. Ao finalizar, você verá sua pontuação, o gabarito e comentários.</p>
+ <ul class="small"><li>Escolha uma alternativa por questão.</li><li>Você pode mudar respostas enquanto o tempo estiver correndo.</li><li>Ao zerar o cronômetro, a prova será corrigida automaticamente.</li><li>Este arquivo funciona no navegador do iPhone e não precisa de internet depois de aberto.</li></ul>
+ <button id="start">Iniciar prova</button>
+</section>
+<section class="panel hidden" id="status">
+ <div class="top"><div><b>Tempo restante</b><div class="small" id="answered">0 de 30 respondidas</div></div><div class="timer" id="clock">45:00</div></div>
+ <div class="progress"><div class="bar" id="bar"></div></div>
+</section>
+<div id="quiz"></div>
+<section class="panel sticky hidden" id="finishbar">
+ <div class="top"><span class="small" id="bottomcount">Responda às questões no seu ritmo.</span><button id="finish">Finalizar e corrigir</button></div>
+</section>
+<section class="result hidden" id="result" aria-live="polite"></section>
+<footer>Material de estudo. Em situações reais, siga os protocolos institucionais e a orientação do enfermeiro responsável.</footer>
+</main>
+<script>
+const questions = [
+{t:"Sinais vitais",q:"Em um adulto em repouso, qual faixa é habitualmente considerada referência para a frequência cardíaca?",o:["40–60 bpm","60–100 bpm","100–120 bpm","120–140 bpm"],a:1,e:"A faixa habitual de referência em adultos em repouso é 60–100 batimentos por minuto. O contexto clínico também deve ser considerado."},
+{t:"Sinais vitais",q:"Ao aferir o pulso radial, quais dedos devem ser utilizados preferencialmente?",o:["Polegar e indicador","Somente o polegar","Indicador e médio","Anelar e mínimo"],a:2,e:"Utilizam-se os dedos indicador e médio. Evita-se o polegar porque ele tem pulsação própria."},
+{t:"Sinais vitais",q:"Quais características devem ser avaliadas no pulso?",o:["Temperatura, cor e odor","Frequência, ritmo e amplitude","Pressão, saturação e dor","Profundidade, expansão e tosse"],a:1,e:"A avaliação do pulso inclui frequência, ritmo e amplitude."},
+{t:"Sinais vitais",q:"Pulso de 52 bpm em um adulto é denominado:",o:["Taquicardia","Taquipneia","Bradicardia","Apneia"],a:2,e:"Bradicardia é frequência cardíaca abaixo de 60 bpm pela referência geral em adultos."},
+{t:"Sinais vitais",q:"Pulso de 116 bpm em um adulto é denominado:",o:["Bradicardia","Taquicardia","Bradipneia","Dispneia"],a:1,e:"Taquicardia é frequência cardíaca acima de 100 bpm pela referência geral em adultos."},
+{t:"Sinais vitais",q:"Na contagem da frequência respiratória, uma incursão corresponde a:",o:["Uma inspiração apenas","Uma expiração apenas","Uma inspiração e uma expiração","Duas inspirações"],a:2,e:"Uma inspiração seguida de uma expiração corresponde a um ciclo respiratório."},
+{t:"Sinais vitais",q:"Qual é a faixa habitual de frequência respiratória em adultos em repouso?",o:["4–8 irpm","8–10 irpm","12–20 irpm","24–30 irpm"],a:2,e:"A referência habitual em adultos em repouso é 12–20 incursões respiratórias por minuto."},
+{t:"Sinais vitais",q:"Paciente com 28 incursões respiratórias por minuto apresenta:",o:["Bradipneia","Taquipneia","Apneia","Bradicardia"],a:1,e:"Taquipneia é aumento da frequência respiratória."},
+{t:"Sinais vitais",q:"O termo que descreve dificuldade para respirar é:",o:["Apneia","Dispneia","Taquipneia","Cianose"],a:1,e:"Dispneia é a sensação ou manifestação de dificuldade respiratória. Pode coexistir com taquipneia."},
+{t:"Sinais vitais",q:"Durante a aferição, o profissional percebe respiração irregular. Qual conduta de contagem é mais apropriada?",o:["Contar por 10 segundos e multiplicar por seis","Contar por 15 segundos e multiplicar por quatro","Contar durante 60 segundos","Estimar visualmente"],a:2,e:"Contar durante 60 segundos é especialmente importante quando o ritmo está irregular."},
+{t:"Terminologias",q:"O elemento 'algia' significa:",o:["Inchaço","Dor","Vermelhidão","Paralisia"],a:1,e:"Algia significa dor. Exemplo: cefalgia é dor de cabeça."},
+{t:"Terminologias",q:"Ausência de respiração é denominada:",o:["Apneia","Dispneia","Paresia","Afasia"],a:0,e:"Apneia significa ausência de respiração."},
+{t:"Terminologias",q:"Coloração azulada ou arroxeada da pele ou mucosas é:",o:["Eritema","Cianose","Edema","Hematoma"],a:1,e:"Cianose é coloração azulada ou arroxeada, que exige avaliação clínica."},
+{t:"Terminologias",q:"Acúmulo de líquido nos tecidos, causando inchaço, é:",o:["Eritema","Edema","Melena","Parestesia"],a:1,e:"Edema é o inchaço decorrente do acúmulo de líquido nos tecidos."},
+{t:"Terminologias",q:"Vermelhidão da pele é chamada de:",o:["Cianose","Eritema","Hematúria","Sialorreia"],a:1,e:"Eritema significa vermelhidão da pele."},
+{t:"Terminologias",q:"Presença de sangue no vômito corresponde a:",o:["Hematúria","Melena","Hematêmese","Hematoma"],a:2,e:"Hematêmese é sangue no vômito."},
+{t:"Terminologias",q:"Presença de sangue na urina é:",o:["Hematúria","Hematêmese","Melena","Fecaloma"],a:0,e:"Hematúria é sangue na urina."},
+{t:"Terminologias",q:"Fezes negras, geralmente por sangue digerido, são denominadas:",o:["Fecaloma","Melena","Hematoma","Eritema"],a:1,e:"Melena é a eliminação de fezes negras por sangue digerido."},
+{t:"Terminologias",q:"Estado profundo de inconsciência é:",o:["Afasia","Coma","Paresia","Parestesia"],a:1,e:"Coma é um estado profundo de inconsciência."},
+{t:"Terminologias",q:"Perda completa do movimento de uma parte do corpo é:",o:["Paresia","Parestesia","Plegia","Algia"],a:2,e:"Plegia significa paralisia ou perda completa do movimento."},
+{t:"Terminologias",q:"Diminuição parcial da força muscular é:",o:["Plegia","Paresia","Apneia","Afasia"],a:1,e:"Paresia é diminuição parcial da força ou capacidade motora."},
+{t:"Terminologias",q:"Formigamento ou dormência são exemplos de:",o:["Parestesia","Paresia","Plegia","Edema"],a:0,e:"Parestesia é sensação anormal, como formigamento ou dormência."},
+{t:"Terminologias",q:"Alteração ou perda da capacidade de linguagem é:",o:["Coma","Afasia","Sialorreia","Algia"],a:1,e:"Afasia é alteração ou perda da capacidade de linguagem."},
+{t:"Terminologias",q:"Massa endurecida de fezes retida no intestino é:",o:["Melena","Fecaloma","Hematoma","Edema"],a:1,e:"Fecaloma é uma massa endurecida de fezes retida no intestino."},
+{t:"Terminologias",q:"Acúmulo de sangue nos tecidos, frequentemente após trauma, é:",o:["Hematoma","Hematúria","Hematêmese","Cianose"],a:0,e:"Hematoma é o acúmulo de sangue nos tecidos."},
+{t:"Terminologias",q:"Produção ou saída excessiva de saliva é:",o:["Afasia","Sialorreia","Parestesia","Apneia"],a:1,e:"Sialorreia significa produção ou saída excessiva de saliva."},
+{t:"Prática clínica",q:"Ao encontrar uma alteração importante nos sinais vitais, o técnico de enfermagem deve:",o:["Ignorar se o paciente não reclamar","Registrar somente no fim do plantão","Avaliar o paciente, comunicar o enfermeiro e seguir o protocolo","Alterar o valor para a faixa normal"],a:2,e:"É necessário observar o estado do paciente, conferir a medida quando indicado, registrar corretamente e comunicar a equipe conforme gravidade e protocolo."},
+{t:"Prática clínica",q:"Qual registro é mais objetivo e adequado?",o:["Paciente está estranho","Paciente parece ruim","Pulso radial 88 bpm, ritmo regular; FR 18 irpm","Paciente normal"],a:2,e:"Registros devem ser objetivos, claros e baseados em dados observados ou relatados."},
+{t:"Prática clínica",q:"Paciente apresenta braço com redução de força, mas ainda consegue movimentá-lo. O termo mais adequado é:",o:["Plegia","Paresia","Parestesia","Afasia"],a:1,e:"Paresia indica diminuição parcial da força. Plegia indica perda completa do movimento."},
+{t:"Prática clínica",q:"Qual associação está correta?",o:["Hematêmese – sangue na urina","Hematúria – sangue no vômito","Melena – fezes negras por sangue digerido","Sialorreia – ausência de saliva"],a:2,e:"Melena corresponde a fezes negras por sangue digerido. Hematêmese é sangue no vômito; hematúria, sangue na urina; sialorreia, excesso de saliva."},
+{t:"Prática clínica",q:"Ao observar inchaço e vermelhidão em uma região, quais termos descrevem os achados?",o:["Edema e eritema","Cianose e apneia","Plegia e paresia","Melena e hematúria"],a:0,e:"Edema descreve inchaço por acúmulo de líquido; eritema descreve vermelhidão."}
+];
+let remaining=45*60, interval=null, started=false, finished=false, answers={};
+const $=id=>document.getElementById(id);
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function update(){
+ $('clock').textContent=fmt(remaining);$('clock').classList.toggle('warn',remaining<=300);
+ $('answered').textContent=Object.keys(answers).length+' de '+questions.length+' respondidas';
+ $('bottomcount').textContent=Object.keys(answers).length+' de '+questions.length+' respondidas';
+ $('bar').style.width=(Object.keys(answers).length/questions.length*100)+'%';
+}
+function render(){
+ $('quiz').innerHTML=questions.map((q,i)=>`<section class="question" id="q${i}"><div class="small"><span class="tag">${q.t}</span> · Questão ${i+1} de ${questions.length}</div><p class="qhead">${q.q}</p><div class="options">${q.o.map((v,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}" ${answers[i]===j?'checked':''} ${finished?'disabled':''}><span><b>${String.fromCharCode(65+j)}.</b> ${v}</span></label>`).join('')}</div><div class="feedback hidden" id="fb${i}"></div></section>`).join('');
+ $('quiz').querySelectorAll('input[type=radio]').forEach(el=>el.addEventListener('change',e=>{answers[Number(e.target.name.slice(1))]=Number(e.target.value);update()}));
+}
+function finish(auto=false){
+ if(finished)return;finished=true;clearInterval(interval);
+ const score=questions.reduce((n,q,i)=>n+(answers[i]===q.a?1:0),0);
+ $('finishbar').classList.add('hidden');
+ $('result').classList.remove('hidden');
+ $('result').innerHTML=`<h2>Resultado da prova</h2><div class="timer">${score} / ${questions.length}</div><p><b>${Math.round(score/questions.length*100)}% de aproveitamento</b> · ${questions.length-score} questões incorretas ou em branco.</p><p>${auto?'O tempo de 45 minutos terminou. ':'Prova finalizada. '}${score>=27?'Excelente desempenho!':score>=22?'Bom resultado. Revise os comentários das questões erradas.':score>=16?'Você está avançando. Reforce os assuntos com erros.':'Use o gabarito comentado para revisar e tente novamente.'}</p><h3>Gabarito comentado</h3>`+
+ questions.map((q,i)=>`<div class="feedback"><b>Questão ${i+1} · ${q.t}</b><br><span class="${answers[i]===q.a?'correct':'incorrect'}">${answers[i]===q.a?'Correta':'Incorreta ou não respondida'} — resposta ${String.fromCharCode(65+q.a)}: ${q.o[q.a]}</span><br>${q.e}</div>`).join('')+
+ `<p class="small">Seu resultado é calculado neste navegador. Se fechar ou atualizar a página antes de finalizar, suas respostas podem ser perdidas.</p><button onclick="location.reload()">Refazer simulado</button>`;
+ $('result').scrollIntoView({behavior:'smooth'});
+}
+$('start').addEventListener('click',()=>{
+ started=true;$('intro').classList.add('hidden');$('status').classList.remove('hidden');$('finishbar').classList.remove('hidden');render();update();
+ interval=setInterval(()=>{remaining--;update();if(remaining<=0)finish(true)},1000);
+ window.scrollTo({top:0,behavior:'smooth'});
+});
+$('finish').addEventListener('click',()=>{if(confirm('Deseja finalizar e corrigir sua prova agora?'))finish(false)});
+</script>
+</body></html>
