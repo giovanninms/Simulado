@@ -9,7 +9,7 @@
 :root{--ink:#172536;--muted:#617184;--line:#d9e1e8;--bg:#f3f6f9;--card:#fff;--accent:#175a86;--soft:#eaf2f8;--good:#176b43;--bad:#a52d35}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
 header{background:#17324d;color:white;padding:22px 16px 18px}header .wrap,main{max-width:850px;margin:auto}
-h1{font-size:1.45rem;line-height:1.2;margin:0 0 7px}header p{margin:0;color:#dce8f1;font-size:.95rem}
+h1{font-size:1.45rem;line-height:1.2;margin:0 0 7px}header p{margin:0;color:#dce8f1;font-size:.95rem} a{text-decoration:none;}
 main{padding:16px 12px 48px}.panel,.question,.result{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #132b3c0a}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .timer{font-variant-numeric:tabular-nums;font-size:1.7rem;font-weight:800;letter-spacing:.03em}
@@ -34,7 +34,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px}
  
 <main>
 <section class="panel" id="intro">
- <button href="anatomia.html">Simulado de Anatomia</button>
+ <button><a href="anatomia.html"><a>Simulado de Anatomia</a></button>
  <div class="top"><div><span class="tag">Prova de treino</span><h2 style="margin:8px 0 3px">Antes de começar</h2></div><div class="timer" id="preview">45:00</div></div>
  <p>O cronômetro começa quando você tocar em <b>Iniciar prova</b>. Responda às questões e finalize antes do tempo acabar. Ao finalizar, você verá sua pontuação, o gabarito e comentários.</p>
  <ul class="small"><li>Escolha uma alternativa por questão.</li><li>Você pode mudar respostas enquanto o tempo estiver correndo.</li><li>Ao zerar o cronômetro, a prova será corrigida automaticamente.</li><li>Este arquivo funciona no navegador do iPhone e não precisa de internet depois de aberto.</li></ul>
