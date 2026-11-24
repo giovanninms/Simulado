@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="artifact-type" content="tool">
+<meta name="design-style" content="vitals">
+<title>Simulado de Anatomia e Fisiologia — Técnico em Enfermagem</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  color-scheme: light;
+
+  /* 1. Vitals style tokens */
+  --background: #ffffff;
+  --surface-container-low: #f1f7f8;
+  --surface-container: #e3f1f3;
+  --surface-container-high: #d5e9ec;
+
+  --on-surface: #1b2b33;
+  --on-surface-variant: #46585f;
+
+  --outline: #7b9198;
+  --outline-variant: #d5e3e5;
+
+  --primary: #0f7c8a;
+  --primary-hover: #0b636f;
+  --on-primary: #ffffff;
+  --primary-container: #e3f1f3;
+  --on-primary-container: #0a5560;
+  --secondary: #1d5e3a;
+  --tertiary: #2e7d4f;
+  --error: #b3261e;
+  --on-error: #ffffff;
+
+  --data-1: #0f7c8a;
+  --data-2: #2e7d4f;
+  --data-3: #b86e00;
+  --data-4: #5c5fb0;
+  --data-context: #b8c7ca;
+
+  --font-headline: 'Figtree', sans-serif;
+  --font-body: 'Atkinson Hyperlegible', sans-serif;
+  --font-label: 'Figtree', sans-serif;
+
+  --rounded: 0.625rem;
+  --rounded-lg: 0.875rem;
+  --rounded-full: 9999px;
+
+  --top-bar: 6px solid var(--primary);
+  --status-bar-width: 4px;
+  --card-border: 1px solid var(--outline-variant);
+  --card-lift: 0 1px 2px rgb(27 43 51 / 0.05), 0 6px 16px rgb(27 43 51 / 0.05);
+
+  /* 2. Shared semantic & focus tokens */
+  --positive: var(--tertiary);
+  --warning: var(--data-3);
+  --focus: var(--primary);
+
+  --ok-tint: color-mix(in srgb, var(--tertiary) 12%, var(--background));
+  --warn-tint: color-mix(in srgb, var(--data-3) 12%, var(--background));
+  --error-tint: color-mix(in srgb, var(--error) 10%, var(--background));
+  --warn-text: #7a4800;
+
+  /* 3. Type scale (Focused Tool + legible body) */
+  --display-size: clamp(1.75rem, 1.35rem + 1.3vw, 2.35rem);
+  --headline-size: clamp(1.25rem, 1.1rem + 0.55vw, 1.5rem);
+  --subhead-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --body-size: clamp(1rem, 0.96rem + 0.18vw, 1.0625rem);
+  --label-size: 0.75rem;
+
+  /* 4. Spacing scale (4pt base) */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* 5. Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+}
+
+/* Base reset */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  overflow-x: clip;
+  margin: 0;
+  padding: 0;
+  background-color: var(--surface-container-low);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+header { position: static !important; }
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+.page-shell {
+  min-height: 100vh;
+  border-top: var(--top-bar);
+  background: var(--surface-container-low);
+}
+
+.page-grid {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  max-width: 1160px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.page-grid * { min-width: 0; }
+
+/* Focus rings */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Header / Title block */
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-md);
+  border-bottom: var(--card-border);
+}
+
+.header-top-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.kicker {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--label-size);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--on-primary-container);
+  background: var(--primary-container);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--rounded-full);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: fit-content;
+}
+
+.title {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: var(--display-size);
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.lede {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--on-surface-variant);
+  max-width: 65ch;
+  margin: 0;
+}
+
+.section-heading {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: var(--headline-size);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.sub-heading {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: var(--subhead-size);
+  line-height: 1.25;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+/* Cards & Vitals status accent bars */
+.status-card {
+  background: var(--background);
+  border: var(--card-border);
+  border-left: var(--status-bar-width) solid var(--primary);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--card-lift);
+}
+.status-card[data-status="ok"] { border-left-color: var(--tertiary); }
+.status-card[data-status="warn"] { border-left-color: var(--data-3); }
+.status-card[data-status="alert"] { border-left-color: var(--error); }
+
+.surface-card {
+  background: var(--background);
+  border: var(--card-border);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--card-lift);
+}
+
+/* Chips */
+.chip {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--label-size);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--rounded-full);
+  background: var(--ok-tint);
+  color: var(--secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.chip[data-status="info"] {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+.chip[data-status="warn"] {
+  background: var(--warn-tint);
+  color: var(--warn-text);
+}
+.chip[data-status="alert"] {
+  background: var(--error-tint);
+  color: var(--error);
+}
+
+/* Buttons */
+.btn {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--body-size);
+  border-radius: var(--rounded);
+  padding: 0.6875rem 1.25rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color var(--dur-micro) var(--ease-out),
+              color var(--dur-micro) var(--ease-out),
+              box-shadow var(--dur-micro) var(--ease-out),
+              transform var(--dur-micro) var(--ease-out);
+  text-decoration: none;
+  line-height: 1.2;
+}
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--background);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-container-low);
+}
+
+.btn-ghost {
+  background: var(--background);
+  color: var(--on-surface);
+  border-color: var(--outline-variant);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-container-low);
+}
+
+.btn-danger-outline {
+  background: var(--background);
+  color: var(--error);
+  border-color: var(--error);
+}
+.btn-danger-outline:hover:not(:disabled) {
+  background: var(--error-tint);
+}
+
+.btn-sm {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  min-height: 44px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Callout */
+.callout {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  border-left: var(--status-bar-width) solid var(--primary);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.callout[data-status="warn"] {
+  background: var(--warn-tint);
+  color: var(--warn-text);
+  border-left-color: var(--data-3);
+}
+.callout[data-status="ok"] {
+  background: var(--ok-tint);
+  color: var(--secondary);
+  border-left-color: var(--tertiary);
+}
+
+/* Views */
+.view-panel {
+  display: grid;
+  gap: var(--space-lg);
+  animation: fadeSlideIn var(--dur-short) var(--ease-out);
+}
+.hidden { display: none !important; }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Start View Grid */
+.hero-action-card {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.hero-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: var(--space-md);
+}
+
+.metric-tile {
+  background: var(--surface-container-low);
+  border: var(--card-border);
+  border-radius: var(--rounded);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.metric-label {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--label-size);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+}
+.metric-value {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-surface);
+}
+.metric-caption {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--space-md);
+}
+
+.system-overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.system-overview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.system-topics {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--on-surface-variant);
+  font-size: 0.9375rem;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+/* History table */
+.history-table-wrap {
+  overflow-x: auto;
+}
+.vitals-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.vitals-table th {
+  text-align: left;
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--label-size);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--card-border);
+}
+.vitals-table td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--card-border);
+  font-variant-numeric: tabular-nums;
+  color: var(--on-surface);
+}
+
+/* Quiz Workspace */
+.quiz-topbar {
+  background: var(--background);
+  border: var(--card-border);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-md) var(--space-lg);
+  display: grid;
+  gap: var(--space-sm);
+  box-shadow: var(--card-lift);
+}
+
+.quiz-topbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.quiz-progress-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: var(--surface-container);
+  border-radius: var(--rounded-full);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: var(--rounded-full);
+  transition: width var(--dur-short) var(--ease-out);
+}
+
+.quiz-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 296px;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.question-card {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.question-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.question-number {
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: var(--label-size);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
+.question-text {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--on-surface);
+  margin: 0;
+  max-width: 65ch;
+}
+
+.options-list {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.option-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--background);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--rounded);
+  padding: var(--space-md);
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-md);
+  cursor: pointer;
+  color: var(--on-surface);
+  font-size: var(--body-size);
+  line-height: 1.5;
+  transition: background-color var(--dur-micro) var(--ease-out),
+              box-shadow var(--dur-micro) var(--ease-out);
+}
+.option-btn:hover {
+  background: var(--surface-container-low);
+}
+.option-btn[aria-checked="true"] {
+  background: var(--primary-container);
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+  color: var(--on-primary-container);
+}
+
+.option-letter {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--rounded);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface);
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.option-btn[aria-checked="true"] .option-letter {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.question-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: var(--card-border);
+}
+
+/* Question Navigator Sidebar */
+.navigator-card {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.navigator-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.nav-dot {
+  min-height: 44px;
+  border-radius: var(--rounded);
+  border: 1px solid var(--outline-variant);
+  background: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--dur-micro) var(--ease-out),
+              box-shadow var(--dur-micro) var(--ease-out);
+}
+.nav-dot:hover {
+  background: var(--surface-container-low);
+}
+.nav-dot.answered {
+  background: var(--primary-container);
+  border-color: var(--primary);
+  color: var(--on-primary-container);
+}
+.nav-dot.current {
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.nav-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--on-surface-variant);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--outline-variant);
+  background: var(--background);
+}
+.legend-swatch.answered {
+  background: var(--primary-container);
+  border-color: var(--primary);
+}
+.legend-swatch.current {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Results View */
+.results-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--space-md);
+}
+
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.kpi-value {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  font-size: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-surface);
+}
+.kpi-caption {
+  font-size: 0.9375rem;
+  color: var(--on-surface-variant);
+}
+.kpi-caption.ok { color: var(--secondary); font-weight: 700; }
+.kpi-caption.warn { color: var(--warn-text); font-weight: 700; }
+.kpi-caption.alert { color: var(--error); font-weight: 700; }
+
+/* Vitals System Reference Chart */
+.chart-container {
+  width: 100%;
+  min-height: 220px;
+}
+.range-band {
+  fill: var(--tertiary);
+  fill-opacity: 0.12;
+  stroke: none;
+}
+
+/* Filter bar for Gabarito */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.filter-label {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--label-size);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+}
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.pill-btn {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 0.875rem;
+  min-height: 44px;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--rounded-full);
+  border: 1px solid var(--outline-variant);
+  background: var(--background);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: background-color var(--dur-micro) var(--ease-out),
+              color var(--dur-micro) var(--ease-out);
+}
+.pill-btn:hover {
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+}
+.pill-btn[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.vitals-select {
+  min-height: 44px;
+  padding: 0.5rem 2.25rem 0.5rem 0.875rem;
+  border: 1px solid var(--outline);
+  border-radius: var(--rounded);
+  background: var(--background);
+  color: var(--on-surface);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.vitals-select:focus {
+  border-color: var(--primary);
+}
+
+/* Review list */
+.review-list {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.review-card {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.review-options {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.review-option {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--rounded);
+  border: 1px solid var(--outline-variant);
+  background: var(--background);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: 0.9375rem;
+}
+.review-option.correct-answer {
+  background: var(--ok-tint);
+  border-color: var(--tertiary);
+  color: var(--secondary);
+  font-weight: 700;
+}
+.review-option.wrong-chosen {
+  background: var(--error-tint);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.review-explanation {
+  background: var(--surface-container-low);
+  border-radius: var(--rounded);
+  padding: var(--space-md);
+  font-size: 0.9375rem;
+  color: var(--on-surface);
+  border-left: 3px solid var(--primary);
+}
+
+/* Footer note */
+.app-footer {
+  border-top: var(--card-border);
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-lg);
+  color: var(--on-surface-variant);
+  font-size: 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+/* Responsive adjustments */
+@media (max-width: 860px) {
+  .quiz-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+  .status-card, .surface-card {
+    padding: var(--space-md);
+  }
+  .navigator-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="page-shell">
+  <div class="page-grid">
+
+    <header class="app-header">
+      <div class="header-top-row">
+        <span class="kicker">
+          <i data-lucide="stethoscope" aria-hidden="true" width="14" height="14"></i>
+          Curso Técnico em Enfermagem · Simulado Interativo
+        </span>
+        <span id="session-status-chip" class="chip" data-status="info">Banco com 60 questões</span>
+      </div>
+      <h1 class="title">Simulado de Anatomia e Fisiologia Humana</h1>
+      <p class="lede">
+        Avaliação para estudantes de enfermagem com sorteio aleatório de 30 questões por tentativa a partir de um banco completo de 60 perguntas sobre os sistemas Tegumentar, Sensorial, Respiratório e Urinário.
+      </p>
+    </header>
+
+    <!-- ESTADO 1: TELA INICIAL -->
+    <main id="view-start" class="view-panel">
+      <section class="status-card hero-action-card" data-status="info">
+        <div style="display: grid; gap: var(--space-xs);">
+          <h2 class="section-heading">Pronto para iniciar uma nova tentativa?</h2>
+          <p class="lede">
+            Cada simulado sorteia 30 questões de múltipla escolha (4 alternativas, apenas 1 correta) de forma aleatória. Ao finalizar, você confere a nota, o percentual por sistema e o gabarito comentado completo.
+          </p>
+        </div>
+
+        <div class="hero-metrics-strip">
+          <div class="metric-tile">
+            <span class="metric-label">Banco total</span>
+            <span class="metric-value">60</span>
+            <span class="metric-caption">15 questões por sistema</span>
+          </div>
+          <div class="metric-tile">
+            <span class="metric-label">Por tentativa</span>
+            <span class="metric-value">30</span>
+            <span class="metric-caption">Sorteadas aleatoriamente</span>
+          </div>
+          <div class="metric-tile">
+            <span class="metric-label">Meta de aprovação</span>
+            <span class="metric-value">70%</span>
+            <span class="metric-caption">Equivalente a 21 acertos (nota 7,0)</span>
+          </div>
+        </div>
+
+        <div id="resume-callout" class="callout hidden" data-status="warn">
+          <strong>Tentativa em andamento salva</strong>
+          <span id="resume-callout-text">Você respondeu a algumas questões de um simulado anterior.</span>
+        </div>
+
+        <div class="button-row">
+          <button id="btn-start-new" type="button" class="btn btn-primary" onclick="startNewQuiz()">
+            <i data-lucide="play" aria-hidden="true" width="18" height="18"></i>
+            Iniciar teste
+          </button>
+          <button id="btn-resume-quiz" type="button" class="btn btn-secondary hidden" onclick="resumeSavedQuiz()">
+            <i data-lucide="arrow-right-circle" aria-hidden="true" width="18" height="18"></i>
+            Continuar tentativa salva
+          </button>
+        </div>
+      </section>
+
+      <section style="display: grid; gap: var(--space-md);">
+        <h2 class="section-heading">Conteúdo programático do banco (60 questões)</h2>
+        <div class="card-grid">
+          <article class="status-card system-overview-card" data-status="info">
+            <div class="system-overview-header">
+              <h3 class="sub-heading">Sistema Tegumentar</h3>
+              <span class="chip" data-status="info">15 questões</span>
+            </div>
+            <ul class="system-topics">
+              <li>Funções da pele e importância no exame físico</li>
+              <li>Epiderme, derme (papilar e reticular) e hipoderme</li>
+              <li>Anexos: unhas, pelos, glândulas sudoríparas e sebáceas</li>
+              <li>Terminações nervosas livres</li>
+            </ul>
+          </article>
+
+          <article class="status-card system-overview-card" data-status="info">
+            <div class="system-overview-header">
+              <h3 class="sub-heading">Sistema Sensorial</h3>
+              <span class="chip" data-status="info">15 questões</span>
+            </div>
+            <ul class="system-topics">
+              <li>Estimulação, transdução, condução e tradução</li>
+              <li>Classificação dos receptores e escala da dor (5º sinal vital)</li>
+              <li>Densidade de receptores cutâneos por cm²</li>
+              <li>Gustação, olfato e anatomia do ouvido</li>
+            </ul>
+          </article>
+
+          <article class="status-card system-overview-card" data-status="info">
+            <div class="system-overview-header">
+              <h3 class="sub-heading">Sistema Respiratório</h3>
+              <span class="chip" data-status="info">15 questões</span>
+            </div>
+            <ul class="system-topics">
+              <li>Porção condutora e porção respiratória</li>
+              <li>Trajeto do ar: fossas nasais aos alvéolos pulmonares</li>
+              <li>Hematose e difusão de O₂ e CO₂</li>
+              <li>Controle pelo bulbo (pH) e mecânica da inspiração</li>
+            </ul>
+          </article>
+
+          <article class="status-card system-overview-card" data-status="info">
+            <div class="system-overview-header">
+              <h3 class="sub-heading">Sistema Urinário</h3>
+              <span class="chip" data-status="info">15 questões</span>
+            </div>
+            <ul class="system-topics">
+              <li>Filtração do plasma, substâncias tóxicas e homeostase</li>
+              <li>Anatomia de rins, ureteres, bexiga urinária e uretra</li>
+              <li>Néfron: corpúsculo renal e túbulos renais</li>
+              <li>Filtração glomerular, reabsorção e secreção tubular</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="history-section" class="surface-card hidden" style="display: grid; gap: var(--space-md);">
+        <div class="header-top-row">
+          <h2 class="section-heading">Histórico de tentativas recentes</h2>
+          <button id="btn-clear-history" type="button" class="btn btn-ghost btn-sm" onclick="clearAttemptHistory(this)">
+            <i data-lucide="trash-2" aria-hidden="true" width="16" height="16"></i>
+            Limpar histórico
+          </button>
+        </div>
+        <div class="history-table-wrap">
+          <table class="vitals-table">
+            <thead>
+              <tr>
+                <th>Tentativa</th>
+                <th>Data / Hora</th>
+                <th>Acertos</th>
+                <th>Nota</th>
+                <th>Desempenho</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- ESTADO 2: REALIZAÇÃO DO SIMULADO -->
+    <main id="view-quiz" class="view-panel hidden">
+      <div class="quiz-topbar">
+        <div class="quiz-topbar-row">
+          <div class="quiz-progress-meta">
+            <span id="quiz-step-label">Questão 1 de 30</span>
+            <span id="quiz-answered-chip" class="chip" data-status="info">0 de 30 respondidas</span>
+          </div>
+          <div class="button-row">
+            <button id="btn-reshuffle-mid" type="button" class="btn btn-ghost btn-sm" onclick="handleMidQuizRedo(this)">
+              <i data-lucide="shuffle" aria-hidden="true" width="16" height="16"></i>
+              Refazer teste
+            </button>
+            <button id="btn-finish-top" type="button" class="btn btn-primary btn-sm" onclick="attemptFinishQuiz()">
+              <i data-lucide="check-circle-2" aria-hidden="true" width="16" height="16"></i>
+              Finalizar teste
+            </button>
+          </div>
+        </div>
+        <div class="progress-track" aria-label="Progresso de questões respondidas">
+          <div id="quiz-progress-fill" class="progress-fill" style="width: 0%;"></div>
+        </div>
+        <div id="quiz-banner-msg" class="callout hidden" data-status="warn"></div>
+      </div>
+
+      <div class="quiz-layout">
+        <!-- Questão ativa -->
+        <section id="question-card" class="status-card question-card" data-status="info">
+          <div class="question-header">
+            <span id="q-counter" class="question-number">Questão 01 / 30</span>
+            <span id="q-system-chip" class="chip" data-status="info">Sistema Tegumentar</span>
+          </div>
+
+          <h2 id="q-prompt" class="question-text"></h2>
+
+          <div id="q-options" class="options-list" role="radiogroup" aria-label="Alternativas da questão"></div>
+
+          <div class="question-footer">
+            <div class="button-row">
+              <button id="btn-prev" type="button" class="btn btn-ghost" onclick="goToPrevQuestion()">
+                <i data-lucide="arrow-left" aria-hidden="true" width="18" height="18"></i>
+                Anterior
+              </button>
+              <button id="btn-next" type="button" class="btn btn-secondary" onclick="goToNextQuestion()">
+                Próxima
+                <i data-lucide="arrow-right" aria-hidden="true" width="18" height="18"></i>
+              </button>
+            </div>
+            <button id="btn-finish-bottom" type="button" class="btn btn-primary" onclick="attemptFinishQuiz()">
+              <i data-lucide="clipboard-check" aria-hidden="true" width="18" height="18"></i>
+              Finalizar teste
+            </button>
+          </div>
+        </section>
+
+        <!-- Navegador de 30 questões -->
+        <aside class="surface-card navigator-card" aria-label="Navegação de perguntas">
+          <div style="display: grid; gap: var(--space-xs);">
+            <h3 class="sub-heading">Mapa de questões</h3>
+            <p style="margin: 0; font-size: 0.875rem; color: var(--on-surface-variant);">
+              Toque em qualquer número para ir direto à pergunta.
+            </p>
+          </div>
+
+          <div id="navigator-grid" class="navigator-grid"></div>
+
+          <div class="nav-legend">
+            <span class="legend-item"><span class="legend-swatch current"></span> Atual</span>
+            <span class="legend-item"><span class="legend-swatch answered"></span> Respondida</span>
+            <span class="legend-item"><span class="legend-swatch"></span> Pendente</span>
+          </div>
+
+          <button id="btn-jump-unanswered" type="button" class="btn btn-ghost btn-sm" onclick="jumpToNextUnanswered()">
+            <i data-lucide="skip-forward" aria-hidden="true" width="16" height="16"></i>
+            Ir para próxima pendente
+          </button>
+        </aside>
+      </div>
+    </main>
+
+    <!-- ESTADO 3: RESULTADO E GABARITO DETALHADO -->
+    <main id="view-results" class="view-panel hidden">
+      <section id="results-hero-card" class="status-card" data-status="ok" style="display: grid; gap: var(--space-lg);">
+        <div class="header-top-row">
+          <div style="display: grid; gap: var(--space-xs);">
+            <span id="result-verdict-chip" class="chip">Desempenho satisfatório</span>
+            <h2 class="section-heading">Resultado completo do simulado</h2>
+            <p id="result-summary-text" class="lede"></p>
+          </div>
+          <div class="button-row">
+            <button id="btn-redo-test" type="button" class="btn btn-primary" onclick="redoQuizWithNewDraw()">
+              <i data-lucide="shuffle" aria-hidden="true" width="18" height="18"></i>
+              Refazer teste
+            </button>
+            <button id="btn-export-txt" type="button" class="btn btn-secondary" onclick="exportReviewTxt()">
+              <i data-lucide="download" aria-hidden="true" width="18" height="18"></i>
+              Exportar gabarito
+            </button>
+            <button id="btn-back-home" type="button" class="btn btn-ghost" onclick="goToStartScreen()">
+              Início
+            </button>
+          </div>
+        </div>
+
+        <div class="results-summary-grid">
+          <div class="status-card kpi-card" id="kpi-grade-card" data-status="ok">
+            <span class="metric-label">Nota final (0 a 10)</span>
+            <span id="kpi-grade" class="kpi-value">0,0</span>
+            <span id="kpi-grade-caption" class="kpi-caption">Referência de aprovação: 7,0</span>
+          </div>
+          <div class="status-card kpi-card" id="kpi-pct-card" data-status="ok">
+            <span class="metric-label">Porcentagem de acertos</span>
+            <span id="kpi-pct" class="kpi-value">0%</span>
+            <span id="kpi-pct-caption" class="kpi-caption">0 de 30 questões</span>
+          </div>
+          <div class="status-card kpi-card" data-status="info">
+            <span class="metric-label">Erros e em branco</span>
+            <span id="kpi-wrong" class="kpi-value">0</span>
+            <span id="kpi-wrong-caption" class="kpi-caption">Revise os comentários abaixo</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gráfico de desempenho por sistema com faixa de referência (70–100%) -->
+      <section class="surface-card" style="display: grid; gap: var(--space-md);">
+        <div class="header-top-row">
+          <div>
+            <h3 class="sub-heading">Aproveitamento por sistema anatômico</h3>
+            <p style="margin: 0; font-size: 0.9375rem; color: var(--on-surface-variant);">
+              A faixa verde indica a zona-alvo recomendada (70% a 100% de acertos).
+            </p>
+          </div>
+        </div>
+        <div id="system-chart-wrap" class="chart-container"></div>
+      </section>
+
+      <!-- Gabarito detalhado -->
+      <section style="display: grid; gap: var(--space-md);">
+        <div class="surface-card filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Filtrar por resultado</span>
+            <div class="filter-pills">
+              <button type="button" class="pill-btn" data-filter-status="all" aria-pressed="true" onclick="setReviewStatusFilter('all')">
+                Todas (<span id="count-all">30</span>)
+              </button>
+              <button type="button" class="pill-btn" data-filter-status="correct" aria-pressed="false" onclick="setReviewStatusFilter('correct')">
+                Acertos (<span id="count-correct">0</span>)
+              </button>
+              <button type="button" class="pill-btn" data-filter-status="wrong" aria-pressed="false" onclick="setReviewStatusFilter('wrong')">
+                Erros / Em branco (<span id="count-wrong">0</span>)
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-system-select">Filtrar por sistema</label>
+            <select id="filter-system-select" class="vitals-select" onchange="setReviewSystemFilter(this.value)">
+              <option value="all">Todos os sistemas</option>
+              <option value="Sistema Tegumentar">Sistema Tegumentar</option>
+              <option value="Sistema Sensorial">Sistema Sensorial</option>
+              <option value="Sistema Respiratório">Sistema Respiratório</option>
+              <option value="Sistema Urinário">Sistema Urinário</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="review-list" class="review-list"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Material de estudo para Curso Técnico em Enfermagem — Sistemas Tegumentar, Sensorial, Respiratório e Urinário.</span>
+      <span>Conteúdo baseado integralmente nas aulas da Prof.ª Danielle Viana.</span>
+    </footer>
+
+  </div>
+</div>
+
+<api-shim></api-shim>
+<script>
+// Banco completo de 60 questões (15 por sistema), nível médio técnico em enfermagem
+const QUESTION_BANK = [
+  // ================= SISTEMA TEGUMENTAR (15) =================
+  {
+    id: `TEG-01`,
+    system: `Sistema Tegumentar`,
+    prompt: `A pele envolve todas as estruturas corporais e substâncias vitais (líquidos), protegendo o organismo contra influências ambientais danosas. De acordo com essa característica anatômica, ela é considerada:`,
+    options: [
+      `Um anexo glandular secundário do sistema nervoso`,
+      `O maior órgão do corpo humano`,
+      `Um tecido exclusivamente subcutâneo e vascularizado`,
+      `Uma membrana mucosa restrita à proteção mecânica`
+    ],
+    correct: 1,
+    explanation: `Conforme o conteúdo da aula, a pele forma um envoltório para as estruturas do corpo e substâncias vitais, constituindo o maior órgão do corpo humano.`
+  },
+  {
+    id: `TEG-02`,
+    system: `Sistema Tegumentar`,
+    prompt: `Na rotina do técnico em enfermagem, por que a avaliação da pele tem grande importância durante os exames físicos do paciente?`,
+    options: [
+      `Porque a pele é facilmente acessível à inspeção clínica`,
+      `Porque é o único órgão que não sofre alterações ambientais`,
+      `Porque substitui a necessidade de aferir sinais vitais`,
+      `Porque permite observar diretamente os néfrons renais`
+    ],
+    correct: 0,
+    explanation: `O material de aula destaca que a pele cobre a superfície corporal e é facilmente acessível, tornando-se fundamental nos exames físicos.`
+  },
+  {
+    id: `TEG-03`,
+    system: `Sistema Tegumentar`,
+    prompt: `Entre as diversas funções do sistema tegumentar, a regulação da temperatura corporal (calor) ocorre principalmente por meio de:`,
+    options: [
+      `Unhas e falanges distais`,
+      `Epiderme córnea e tecido adiposo apenas`,
+      `Glândulas sudoríparas e vasos sanguíneos`,
+      `Glândulas sebáceas e pelos do couro cabeludo`
+    ],
+    correct: 2,
+    explanation: `A regulação do calor pelo sistema tegumentar é realizada por meio das glândulas sudoríparas e dos vasos sanguíneos cutâneos.`
+  },
+  {
+    id: `TEG-04`,
+    system: `Sistema Tegumentar`,
+    prompt: `Anatomicamente, a pele propriamente dita é composta por duas camadas principais. Quais são elas?`,
+    options: [
+      `Epiderme (superficial) e derme (profunda)`,
+      `Derme (superficial) e hipoderme (profunda)`,
+      `Epiderme (profunda) e tela subcutânea (superficial)`,
+      `Camada reticular e tecido adiposo exclusivamente`
+    ],
+    correct: 0,
+    explanation: `A composição da pele é formada por duas camadas: a epiderme (camada celular superficial) e a derme (camada de tecido conectivo profunda).`
+  },
+  {
+    id: `TEG-05`,
+    system: `Sistema Tegumentar`,
+    prompt: `Sobre as características da epiderme, camada mais superficial da pele, é correto afirmar que ela:`,
+    options: [
+      `É ricamente vascularizada por capilares arteriais`,
+      `Não é vascularizada e varia de espessura conforme a região do corpo`,
+      `Apresenta exatamente a mesma espessura em toda a superfície corporal`,
+      `É constituída principalmente por tecido conjuntivo frouxo e adiposo`
+    ],
+    correct: 1,
+    explanation: `A epiderme não possui vascularização própria e sua espessura varia nas diferentes partes do corpo.`
+  },
+  {
+    id: `TEG-06`,
+    system: `Sistema Tegumentar`,
+    prompt: `Em quais regiões do corpo humano a epiderme se apresenta especialmente espessa, dura e de textura córnea?`,
+    options: [
+      `Nas pálpebras e na face anterior do pescoço`,
+      `No escroto e no couro cabeludo`,
+      `Na palma da mão e na planta dos pés`,
+      `Na superfície ventral do antebraço`
+    ],
+    correct: 2,
+    explanation: `Na palma da mão e na planta dos pés, a epiderme é espessa, dura e de textura córnea para maior resistência ao atrito.`
+  },
+  {
+    id: `TEG-07`,
+    system: `Sistema Tegumentar`,
+    prompt: `A camada profunda da pele, também denominada "cútis verdadeira" ou "pele verdadeira", rija, flexível e elástica, com numerosos nervos, vasos sanguíneos e linfáticos, é a:`,
+    options: [
+      `Hipoderme`,
+      `Epiderme`,
+      `Derme`,
+      `Membrana basal ungueal`
+    ],
+    correct: 2,
+    explanation: `A derme (ou cútis verdadeira) é a camada de tecido conjuntivo profunda, rija, flexível e elástica, onde se encontram fibras elásticas, nervos e vasos sanguíneos e linfáticos.`
+  },
+  {
+    id: `TEG-08`,
+    system: `Sistema Tegumentar`,
+    prompt: `O tecido conjuntivo da derme dispõe-se em duas subcamadas. Como elas são denominadas?`,
+    options: [
+      `Superficial (papilar) e profunda (reticular)`,
+      `Superficial (córnea) e profunda (adiposa)`,
+      `Superficial (subcutânea) e profunda (muscular)`,
+      `Externa (alveolar) e interna (tubular)`
+    ],
+    correct: 0,
+    explanation: `Na derme, o tecido conjuntivo organiza-se em duas camadas: uma superficial ou papilar e outra profunda ou reticular.`
+  },
+  {
+    id: `TEG-09`,
+    system: `Sistema Tegumentar`,
+    prompt: `Em comparação com a superfície dorsal do corpo, onde a derme é mais espessa, em quais regiões ela se mostra excessivamente fina e delicada?`,
+    options: [
+      `Nos calcanhares e na palma das mãos`,
+      `Nas pálpebras, no escroto e no pênis`,
+      `Na região dorsal do tronco e nos ombros`,
+      `Apenas na face lateral dos membros inferiores`
+    ],
+    correct: 1,
+    explanation: `Segundo a aula, a derme é mais espessa na superfície dorsal do que na ventral e lateral, sendo excessivamente fina e delicada nas pálpebras, escroto e pênis.`
+  },
+  {
+    id: `TEG-10`,
+    system: `Sistema Tegumentar`,
+    prompt: `Em relação ao tecido subcutâneo (tela subcutânea ou hipoderme), localizado abaixo da derme, assinale a afirmativa correta:`,
+    options: [
+      `Faz parte da epiderme e possui textura córnea`,
+      `Não é considerado como pertencente à pele e é composto principalmente por tecido conjuntivo frouxo e adiposo`,
+      `É desprovido de tecido adiposo e abriga os corpúsculos gustativos`,
+      `Forma a camada papilar superficial da cútis verdadeira`
+    ],
+    correct: 1,
+    explanation: `A tela subcutânea (hipoderme) situa-se sob a derme, não é considerada pertencente à pele e compõe-se principalmente de tecido conjuntivo frouxo e tecido adiposo.`
+  },
+  {
+    id: `TEG-11`,
+    system: `Sistema Tegumentar`,
+    prompt: `Quais são as duas funções principais desempenhadas pelo tecido subcutâneo (hipoderme)?`,
+    options: [
+      `Produzir cerúmen e proteger o tímpano`,
+      `Realizar trocas gasosas e regular o pH sanguíneo`,
+      `Auxiliar no isolamento térmico do corpo contra variações extremas e fixar a pele às estruturas subjacentes`,
+      `Captar estímulos luminosos e produzir melanina exclusivamente`
+    ],
+    correct: 2,
+    explanation: `O tecido subcutâneo desempenha duas funções principais: ajuda a isolar o corpo das variações extremas do meio ambiente e fixa a pele às estruturas subjacentes.`
+  },
+  {
+    id: `TEG-12`,
+    system: `Sistema Tegumentar`,
+    prompt: `Quais estruturas compõem o grupo dos anexos da pele?`,
+    options: [
+      `Unhas, pelos, glândulas sudoríparas e glândulas sebáceas com seus ductos`,
+      `Epiderme, derme, hipoderme e músculos intercostais`,
+      `Papilas linguais, células olfativas e canal auditivo`,
+      `Vasos linfáticos, peritônio e tecido adiposo visceral`
+    ],
+    correct: 0,
+    explanation: `Os anexos da pele são as unhas, os pelos e as glândulas sudoríparas e sebáceas com seus respectivos ductos.`
+  },
+  {
+    id: `TEG-13`,
+    system: `Sistema Tegumentar`,
+    prompt: `As unhas estão aplicadas sobre a superfície dorsal das falanges distais. Como são chamadas, respectivamente, a porção implantada no sulco da pele, a porção exposta e a extremidade distal?`,
+    options: [
+      `Haste, raiz e alvéolo`,
+      `Raiz, corpo e borda livre`,
+      `Corpo, haste e ducto`,
+      `Papila, cápsula e borda córnea`
+    ],
+    correct: 1,
+    explanation: `Cada unha é implantada pela raiz em um sulco da pele; a porção exposta chama-se corpo e a extremidade distal é a borda livre.`
+  },
+  {
+    id: `TEG-14`,
+    system: `Sistema Tegumentar`,
+    prompt: `Sobre as glândulas sudoríparas e sebáceas da pele, assinale a afirmação correta:`,
+    options: [
+      `As glândulas sebáceas são encontradas exclusivamente na planta dos pés`,
+      `As glândulas sudoríparas possuem corpo glandular na parte profunda e ducto que atravessa derme e epiderme até a superfície`,
+      `Os pelos são compostos por corpo glandular e borda livre`,
+      `As glândulas sebáceas não possuem ducto e se localizam apenas na epiderme`
+    ],
+    correct: 1,
+    explanation: `As glândulas sudoríparas consistem em um tubo com corpo glandular profundo e ducto que atravessa a derme e a epiderme; já as sebáceas alojam-se na derme (abundantes no couro cabeludo e face) com ducto que emerge de alvéolos.`
+  },
+  {
+    id: `TEG-15`,
+    system: `Sistema Tegumentar`,
+    prompt: `As terminações nervosas livres, presentes em todos os tecidos conjuntivos, são sensíveis especialmente a quais tipos de estímulos?`,
+    options: [
+      `Exclusivamente a ondas luminosas`,
+      `Somente a alterações químicas da saliva`,
+      `A estímulos térmicos e, especialmente, mecânicos e dolorosos`,
+      `Unicamente à pressão sonora no ouvido médio`
+    ],
+    correct: 2,
+    explanation: `Conforme a aula, as terminações nervosas livres estão presentes em todos os tecidos conjuntivos e respondem a estímulos térmicos e especialmente mecânicos e dolorosos.`
+  },
+
+  // ================= SISTEMA SENSORIAL (15) =================
+  {
+    id: `SEN-01`,
+    system: `Sistema Sensorial`,
+    prompt: `Qual é a definição e a função principal do sistema sensorial no organismo humano?`,
+    options: [
+      `Conjunto de órgãos e receptores que captam estímulos internos e externos e transmitem informações ao SNC para processamento`,
+      `Sistema que filtra o plasma sanguíneo para eliminar amônia e ácido úrico`,
+      `Conjunto de estruturas responsáveis apenas pela contração do diafragma`,
+      `Sistema formado exclusivamente pela epiderme para isolar o corpo termicamente`
+    ],
+    correct: 0,
+    explanation: `O sistema sensorial é o conjunto de órgãos, neurônios e receptores especializados que captam estímulos do meio externo e interno e os enviam ao Sistema Nervoso Central (SNC).`
+  },
+  {
+    id: `SEN-02`,
+    system: `Sistema Sensorial`,
+    prompt: `Na assistência de enfermagem, por que avaliar a integridade sensorial do paciente é uma conduta essencial?`,
+    options: [
+      `Para dispensar o controle de hidratação venosa`,
+      `Para monitorar o nível de consciência, identificar falhas neurológicas e prevenir riscos como quedas e queimaduras`,
+      `Para acelerar a filtração glomerular nos néfrons`,
+      `Para estimular a produção de sebo pelas glândulas da face`
+    ],
+    correct: 1,
+    explanation: `Na enfermagem, identificar alterações sensoriais protege o paciente de riscos (quedas, queimaduras) e auxilia no monitoramento do nível de consciência e identificação de falhas neurológicas.`
+  },
+  {
+    id: `SEN-03`,
+    system: `Sistema Sensorial`,
+    prompt: `No processo "da estimulação à percepção", o que acontece especificamente na etapa chamada TRANSDUÇÃO?`,
+    options: [
+      `O cérebro interpreta o sinal elétrico como sensação de frio ou dor`,
+      `O receptor sensorial transforma o estímulo químico ou físico em sinal elétrico (impulso elétrico)`,
+      `Os músculos se contraem para afastar o membro da fonte de calor`,
+      `As vias nervosas levam o sinal da medula até os ossos temporais`
+    ],
+    correct: 1,
+    explanation: `A transdução é a etapa em que o receptor especializado converte o estímulo físico ou químico em sinal elétrico (potencial de ação).`
+  },
+  {
+    id: `SEN-04`,
+    system: `Sistema Sensorial`,
+    prompt: `Qual é a ordem correta das quatro etapas que ocorrem desde a captação de um estímulo ambiental até sua interpretação consciente?`,
+    options: [
+      `Tradução → Condução → Transdução → Estímulo`,
+      `Estímulo → Transdução → Condução → Tradução`,
+      `Condução → Estímulo → Tradução → Transdução`,
+      `Estímulo → Tradução → Hematose → Condução`
+    ],
+    correct: 1,
+    explanation: `A sequência fisiológica apresentada em aula é: Estímulo (mudança física/química) → Transdução (conversão em sinal elétrico) → Condução (vias aferentes até medula e cérebro) → Tradução (interpretação cerebral como sensação).`
+  },
+  {
+    id: `SEN-05`,
+    system: `Sistema Sensorial`,
+    prompt: `Os receptores sensoriais localizados nos músculos e tendões, responsáveis por fornecer a percepção da posição do corpo no espaço, são chamados de:`,
+    options: [
+      `Exterorreceptores`,
+      `Interorreceptores`,
+      `Proprioceptores`,
+      `Fotorreceptores`
+    ],
+    correct: 2,
+    explanation: `Os proprioceptores localizam-se em músculos e tendões e informam ao SNC a posição e movimentação do corpo.`
+  },
+  {
+    id: `SEN-06`,
+    system: `Sistema Sensorial`,
+    prompt: `Como são classificados os receptores encarregados de captar modificações internas do organismo, como alterações nos vasos sanguíneos?`,
+    options: [
+      `Interorreceptores`,
+      `Exterorreceptores`,
+      `Fotorreceptores`,
+      `Corpúsculos gustativos`
+    ],
+    correct: 0,
+    explanation: `Os interorreceptores captam modificações do meio interno, como nos vasos sanguíneos; já os exterorreceptores captam estímulos externos (pele, olho).`
+  },
+  {
+    id: `SEN-07`,
+    system: `Sistema Sensorial`,
+    prompt: `Relacionando o tipo de receptor sensorial ao estímulo que ele capta, assinale a correspondência correta:`,
+    options: [
+      `Fotorreceptores: respondem a substâncias químicas`,
+      `Mecanorreceptores: respondem a toque, pressão e som`,
+      `Quimiorreceptores: respondem exclusivamente à luz`,
+      `Termorreceptores: respondem apenas ao equilíbrio corporal`
+    ],
+    correct: 1,
+    explanation: `Mecanorreceptores captam toque, pressão e som; termorreceptores captam temperatura; quimiorreceptores captam substâncias químicas (olfato e paladar); e fotorreceptores captam luz (visão).`
+  },
+  {
+    id: `SEN-08`,
+    system: `Sistema Sensorial`,
+    prompt: `Quais são os receptores sensoriais específicos responsáveis pela captação de estímulos dolorosos (nocicepção)?`,
+    options: [
+      `Proprioceptores`,
+      `Quimiorreceptores`,
+      `Nociceptores`,
+      `Fotorreceptores`
+    ],
+    correct: 2,
+    explanation: `Os nociceptores são os receptores específicos da dor, fundamentais para a compreensão da nocicepção e dos reflexos de proteção.`
+  },
+  {
+    id: `SEN-09`,
+    system: `Sistema Sensorial`,
+    prompt: `Na prática clínica da enfermagem, a dor é considerada o "quinto sinal vital". Como o profissional quantifica a dor relatada pelo paciente?`,
+    options: [
+      `Utilizando escalas visuais ou numéricas`,
+      `Medindo a espessura da epiderme plantar`,
+      `Calculando o pH urinário após a micção`,
+      `Contando a frequência de piscadas por minuto`
+    ],
+    correct: 0,
+    explanation: `Como 5º sinal vital, a dor relatada pelas terminações livres do paciente é avaliada e quantificada pela enfermagem por meio de escalas visuais ou numéricas.`
+  },
+  {
+    id: `SEN-10`,
+    system: `Sistema Sensorial`,
+    prompt: `Calcula-se que, a cada centímetro quadrado da pele humana, exista em média qual quantidade de receptores cutâneos?`,
+    options: [
+      `2 de frio, 12 de calor, 25 de tato e 200 de dor`,
+      `200 de frio, 25 de calor, 12 de tato e 2 de dor`,
+      `12 de frio, 2 de calor, 200 de tato e 25 de dor`,
+      `25 de frio, 25 de calor, 25 de tato e 25 de dor`
+    ],
+    correct: 0,
+    explanation: `A aula informa que, em média, cada cm² de pele humana apresenta 2 receptores de frio, 12 de calor, 25 de tato e 200 de dor.`
+  },
+  {
+    id: `SEN-11`,
+    system: `Sistema Sensorial`,
+    prompt: `Em relação ao tato na pele, em qual camada concentram-se os vasos sanguíneos e a maioria dos receptores táteis?`,
+    options: [
+      `Na epiderme`,
+      `Na derme`,
+      `Na borda livre das unhas`,
+      `Na haste dos pelos`
+    ],
+    correct: 1,
+    explanation: `Na derme (camada profunda da pele) concentram-se os vasos sanguíneos e a maioria dos receptores táteis.`
+  },
+  {
+    id: `SEN-12`,
+    system: `Sistema Sensorial`,
+    prompt: `Sobre a língua e o sentido da gustação, como se denominam as terminações nervosas presentes nas papilas linguais e qual fluido é necessário para o contato dos alimentos com elas?`,
+    options: [
+      `Células olfativas; muco nasal`,
+      `Corpúsculos gustativos; saliva`,
+      `Alvéolos sensoriais; cerúmen`,
+      `Nociceptores; plasma sanguíneo`
+    ],
+    correct: 1,
+    explanation: `Os corpúsculos gustativos situam-se nas papilas linguais e recebem estímulos dos alimentos misturados com a saliva, levando a informação ao cérebro.`
+  },
+  {
+    id: `SEN-13`,
+    system: `Sistema Sensorial`,
+    prompt: `Onde se localizam as células olfativas que constituem as terminações do nervo olfativo?`,
+    options: [
+      `Na mucosa que reveste a parte superior das fossas nasais`,
+      `Na porção inferior da laringe, junto às pregas vocais`,
+      `Na superfície da caixa do tímpano`,
+      `Na mucosa da porção distal da uretra`
+    ],
+    correct: 0,
+    explanation: `As células olfativas encontram-se na mucosa da parte superior das fossas nasais e são sensibilizadas por substâncias transportadas pelo ar.`
+  },
+  {
+    id: `SEN-14`,
+    system: `Sistema Sensorial`,
+    prompt: `Os ouvidos ficam encaixados nos ossos temporais e dividem-se em três partes (externo, médio e interno). O ouvido externo é formado por quais estruturas?`,
+    options: [
+      `Tímpano e caixa do tímpano`,
+      `Pavilhão auditivo (orelha) e canal auditivo externo`,
+      `Fossas nasais e faringe`,
+      `Cóclea e nervo olfativo`
+    ],
+    correct: 1,
+    explanation: `O ouvido externo é composto pelo pavilhão auditivo (que capta e direciona os sons) e pelo canal auditivo externo (que conduz o som para o interior).`
+  },
+  {
+    id: `SEN-15`,
+    system: `Sistema Sensorial`,
+    prompt: `No canal auditivo externo existem pelos e glândulas produtoras de cerúmen. Qual é a função conjunta dessas estruturas, e onde se localiza o tímpano?`,
+    options: [
+      `Proteger contra a entrada de corpos estranhos; o tímpano fica no ouvido médio (caixa do tímpano)`,
+      `Amplificar sabores ácidos; o tímpano fica no ouvido externo`,
+      `Umidificar o ar inspirado; o tímpano fica no osso frontal`,
+      `Produzir impulso elétrico luminoso; o tímpano fica no ouvido interno`
+    ],
+    correct: 0,
+    explanation: `Os pelos e o cerúmen protegem o ouvido contra corpos estranhos; o tímpano (fina membrana) situa-se no ouvido médio, também chamado de caixa do tímpano, dentro do osso temporal.`
+  },
+
+  // ================= SISTEMA RESPIRATÓRIO (15) =================
+  {
+    id: `RES-01`,
+    system: `Sistema Respiratório`,
+    prompt: `Qual é o papel fisiológico fundamental do sistema respiratório humano?`,
+    options: [
+      `Garantir a captação de oxigênio do meio ambiente e a liberação de gás carbônico`,
+      `Filtrar o plasma sanguíneo para excretar ureia e creatinina`,
+      `Isolar o corpo contra variações térmicas por meio de tecido adiposo`,
+      `Converter ondas sonoras em potenciais de ação no osso temporal`
+    ],
+    correct: 0,
+    explanation: `O sistema respiratório garante a entrada e saída de ar, assegurando a captação de oxigênio (O₂) do meio ambiente e a liberação de gás carbônico (CO₂).`
+  },
+  {
+    id: `RES-02`,
+    system: `Sistema Respiratório`,
+    prompt: `Além das trocas gasosas, o sistema respiratório também está diretamente relacionado a quais duas outras funções?`,
+    options: [
+      `Gustação e sudorese`,
+      `Olfato e fala (devido à presença das pregas vocais)`,
+      `Equilíbrio hidroeletrolítico e visão`,
+      `Proteção ungueal e secreção sebácea`
+    ],
+    correct: 1,
+    explanation: `Segundo a aula, além da respiração, esse sistema relaciona-se ao olfato e à fala, em razão da presença das pregas vocais.`
+  },
+  {
+    id: `RES-03`,
+    system: `Sistema Respiratório`,
+    prompt: `Didaticamente, o sistema respiratório é dividido em duas porções. Quais são elas?`,
+    options: [
+      `Porção papilar e porção reticular`,
+      `Porção condutora e porção respiratória`,
+      `Porção glomerular e porção tubular`,
+      `Porção aferente e porção subcutânea`
+    ],
+    correct: 1,
+    explanation: `O sistema respiratório divide-se em porção condutora (vias que conduzem o ar) e porção respiratória (onde ocorrem as trocas gasosas).`
+  },
+  {
+    id: `RES-04`,
+    system: `Sistema Respiratório`,
+    prompt: `Quais órgãos listados no material de aula fazem parte da porção condutora do sistema respiratório?`,
+    options: [
+      `Fossas nasais, faringe, laringe, traqueia, brônquios e bronquíolos`,
+      `Exclusivamente os alvéolos pulmonares e os capilares`,
+      `Rins, ureteres, bexiga e uretra`,
+      `Corpúsculo renal, alça de Henle e túbulo distal`
+    ],
+    correct: 0,
+    explanation: `A porção condutora compreende as estruturas que levam o ar até os pulmões, iniciando nas fossas nasais, seguindo por faringe, laringe, traqueia, brônquios e bronquíolos.`
+  },
+  {
+    id: `RES-05`,
+    system: `Sistema Respiratório`,
+    prompt: `Quando o ar entra inicialmente pelas fossas nasais, quais três processos ele sofre antes de prosseguir pelas vias aéreas?`,
+    options: [
+      `É resfriado, desidratado e acidificado`,
+      `É umedecido, aquecido e filtrado`,
+      `É comprimido, convertido em plasma e absorvido`,
+      `É misturado ao cerúmen e direcionado à faringe`
+    ],
+    correct: 1,
+    explanation: `Nas fossas nasais, o ar inspirado é umedecido, aquecido e filtrado para proteger as estruturas pulmonares.`
+  },
+  {
+    id: `RES-06`,
+    system: `Sistema Respiratório`,
+    prompt: `Qual alternativa apresenta a sequência anatômica correta percorrida pelo ar inspirado até atingir a traqueia?`,
+    options: [
+      `Fossas nasais → laringe → faringe → traqueia`,
+      `Fossas nasais → faringe → laringe → traqueia`,
+      `Faringe → fossas nasais → traqueia → laringe`,
+      `Traqueia → laringe → faringe → fossas nasais`
+    ],
+    correct: 1,
+    explanation: `O ar entra pelas fossas nasais, segue para a faringe, posteriormente para a laringe e então para a traqueia.`
+  },
+  {
+    id: `RES-07`,
+    system: `Sistema Respiratório`,
+    prompt: `Na porção inferior das vias condutoras, a traqueia ramifica-se em quais estruturas para dar acesso aos pulmões?`,
+    options: [
+      `Em dois brônquios`,
+      `Em dois ureteres`,
+      `Em três alças de Henle`,
+      `Em duas cápsulas de Bowman`
+    ],
+    correct: 0,
+    explanation: `A traqueia ramifica-se em dois brônquios, dando acesso aos pulmões direito e esquerdo.`
+  },
+  {
+    id: `RES-08`,
+    system: `Sistema Respiratório`,
+    prompt: `Após passar pelos brônquios dentro dos pulmões, qual é o trajeto final do ar até o local das trocas gasosas?`,
+    options: [
+      `Dos brônquios segue para a laringe e termina na faringe`,
+      `Dos brônquios segue para os bronquíolos e chega aos alvéolos pulmonares`,
+      `Dos brônquios segue para o diafragma e termina nos músculos intercostais`,
+      `Dos brônquios segue diretamente para o bulbo encefálico`
+    ],
+    correct: 1,
+    explanation: `Dos brônquios, o ar segue para os bronquíolos e finalmente chega aos alvéolos pulmonares.`
+  },
+  {
+    id: `RES-09`,
+    system: `Sistema Respiratório`,
+    prompt: `Como é denominado o processo de trocas gasosas que ocorre nos alvéolos pulmonares?`,
+    options: [
+      `Transdução`,
+      `Hematose`,
+      `Secreção tubular`,
+      `Filtração glomerular`
+    ],
+    correct: 1,
+    explanation: `As trocas gasosas que ocorrem nos alvéolos pulmonares recebem o nome de hematose.`
+  },
+  {
+    id: `RES-10`,
+    system: `Sistema Respiratório`,
+    prompt: `Durante a hematose, o que ocorre com o oxigênio que chega ao interior dos alvéolos pulmonares?`,
+    options: [
+      `Dissolve-se na camada de revestimento alveolar e difunde-se pelo epitélio para os capilares ao redor dos alvéolos`,
+      `É armazenado na traqueia e devolvido pelas fossas nasais`,
+      `Difunde-se dos capilares venosos para o interior da bexiga`,
+      `É filtrado pelos glomérulos renais antes de entrar no sangue`
+    ],
+    correct: 0,
+    explanation: `Na hematose, o oxigênio do ar alveolar dissolve-se na camada que reveste o alvéolo e difunde-se pelo epitélio para os capilares que o circundam.`
+  },
+  {
+    id: `RES-11`,
+    system: `Sistema Respiratório`,
+    prompt: `No processo de hematose, qual é a direção da difusão do gás carbônico (CO₂)?`,
+    options: [
+      `Dos alvéolos pulmonares para os capilares sanguíneos, junto com o O₂`,
+      `No sentido oposto ao do oxigênio: dos capilares sanguíneos para os alvéolos`,
+      `Dos brônquios diretamente para o tecido subcutâneo`,
+      `Das glândulas sudoríparas para os bronquíolos terminais`
+    ],
+    correct: 1,
+    explanation: `Enquanto o oxigênio difunde-se do alvéolo para os capilares, o gás carbônico difunde-se no sentido oposto (dos capilares para os alvéolos) para ser expirado.`
+  },
+  {
+    id: `RES-12`,
+    system: `Sistema Respiratório`,
+    prompt: `Em qual região do sistema nervoso localizam-se os neurônios responsáveis pela regulação automática da respiração?`,
+    options: [
+      `Na região do bulbo`,
+      `Nos corpúsculos gustativos da língua`,
+      `No túbulo contorcido proximal`,
+      `Nas terminações livres da epiderme`
+    ],
+    correct: 0,
+    explanation: `Os seres humanos possuem neurônios na região do bulbo que garantem a regulação e o ajuste da respiração.`
+  },
+  {
+    id: `RES-13`,
+    system: `Sistema Respiratório`,
+    prompt: `Qual alteração no líquido do tecido circundante é detectada pelo bulbo para modificar o ritmo respiratório?`,
+    options: [
+      `Alterações no pH`,
+      `Alterações na concentração de cerúmen`,
+      `Mudanças na coloração das unhas`,
+      `Variações na quantidade de melanina da derme`
+    ],
+    correct: 0,
+    explanation: `O bulbo percebe alterações no pH do líquido do tecido circundante e desencadeia respostas que ajustam o ritmo respiratório.`
+  },
+  {
+    id: `RES-14`,
+    system: `Sistema Respiratório`,
+    prompt: `Durante a inspiração — movimento que garante a entrada de ar no sistema respiratório — ocorre a:`,
+    options: [
+      `Contração do diafragma e dos músculos intercostais`,
+      `Relaxamento simultâneo do diafragma e da laringe`,
+      `Contração exclusiva da bexiga urinária e do peritônio`,
+      `Obstrução fisiológica da traqueia pelos brônquios`
+    ],
+    correct: 0,
+    explanation: `Na inspiração há contração do diafragma e dos músculos intercostais, promovendo a entrada de ar nos pulmões.`
+  },
+  {
+    id: `RES-15`,
+    system: `Sistema Respiratório`,
+    prompt: `Qual é o efeito mecânico da contração do diafragma e dos músculos intercostais sobre a caixa torácica durante a inspiração?`,
+    options: [
+      `Retração da caixa torácica e aumento acentuado da pressão interna`,
+      `Expansão da caixa torácica e diminuição da pressão interna, permitindo a entrada de ar`,
+      `Imobilização das costelas para evitar a hematose`,
+      `Redução do volume pulmonar e expulsão do gás oxigênio`
+    ],
+    correct: 1,
+    explanation: `A contração do diafragma e dos músculos intercostais leva à expansão da caixa torácica e à diminuição da pressão interna, possibilitando a entrada de ar.`
+  },
+
+  // ================= SISTEMA URINÁRIO (15) =================
+  {
+    id: `URI-01`,
+    system: `Sistema Urinário`,
+    prompt: `Qual fração do sangue é filtrada pelo sistema urinário com o objetivo de eliminar substâncias tóxicas e formar a urina?`,
+    options: [
+      `A parte líquida do sangue (plasma sanguíneo)`,
+      `Exclusivamente os elementos figurados do sangue`,
+      `Apenas as hemácias envelhecidas`,
+      `Somente o tecido adiposo da hipoderme`
+    ],
+    correct: 0,
+    explanation: `O sistema urinário filtra a parte líquida do sangue (plasma sanguíneo) para eliminar resíduos tóxicos e manter a homeostase.`
+  },
+  {
+    id: `URI-02`,
+    system: `Sistema Urinário`,
+    prompt: `Em condições fisiológicas normais, quais componentes do sangue NÃO são filtrados pelo sistema urinário?`,
+    options: [
+      `Água e sais minerais`,
+      `Ureia e creatinina`,
+      `Elementos figurados do sangue: hemácias, leucócitos e plaquetas`,
+      `Ácido úrico e amônia`
+    ],
+    correct: 2,
+    explanation: `O material enfatiza que o sistema urinário filtra o plasma sanguíneo, mas não filtra os elementos figurados do sangue (hemácias, leucócitos e plaquetas).`
+  },
+  {
+    id: `URI-03`,
+    system: `Sistema Urinário`,
+    prompt: `Quais são as principais substâncias tóxicas provenientes do metabolismo eliminadas pelo sistema urinário?`,
+    options: [
+      `Oxigênio, glicose, saliva e cerúmen`,
+      `Ureia, creatinina, ácido úrico e amônia`,
+      `Hemácias, plaquetas, leucócitos e sebo`,
+      `Queratina, melanina e gás carbônico`
+    ],
+    correct: 1,
+    explanation: `As principais substâncias tóxicas do metabolismo eliminadas na urina são ureia, creatinina, ácido úrico e amônia.`
+  },
+  {
+    id: `URI-04`,
+    system: `Sistema Urinário`,
+    prompt: `Assinale a associação correta entre os órgãos do sistema urinário e suas funções sequenciais (produção, condução, armazenamento e eliminação):`,
+    options: [
+      `Rins (produção), ureteres (condução), bexiga (armazenamento) e uretra (eliminação)`,
+      `Rins (armazenamento), ureteres (produção), bexiga (eliminação) e uretra (condução)`,
+      `Ureteres (armazenamento), rins (condução), bexiga (produção) e uretra (filtração)`,
+      `Bexiga (produção), rins (eliminação), uretra (armazenamento) e ureteres (secreção)`
+    ],
+    correct: 0,
+    explanation: `A sequência funcional do sistema urinário é: produção da urina pelos rins, condução pelos ureteres, armazenamento na bexiga e eliminação pela uretra.`
+  },
+  {
+    id: `URI-05`,
+    system: `Sistema Urinário`,
+    prompt: `Além da excreção de resíduos metabólicos, qual papel crucial o sistema urinário desempenha na homeostase corporal?`,
+    options: [
+      `Manutenção do equilíbrio hidroeletrolítico, reabsorção de substâncias úteis e regulação do volume sanguíneo, pressão arterial e pH do sangue`,
+      `Produção de pregas vocais e aquecimento do ar inspirado`,
+      `Transdução de estímulos luminosos e táteis na derme`,
+      `Fixação da pele aos músculos subjacentes`
+    ],
+    correct: 0,
+    explanation: `O sistema urinário mantém o equilíbrio hidroeletrolítico e do pH, reabsorve substâncias úteis e regula o volume sanguíneo e a pressão arterial.`
+  },
+  {
+    id: `URI-06`,
+    system: `Sistema Urinário`,
+    prompt: `Quais são os componentes anatômicos do sistema urinário e suas respectivas quantidades no organismo humano?`,
+    options: [
+      `Um rim, dois ureteres, duas bexigas e uma uretra`,
+      `Dois rins, dois ureteres, uma bexiga urinária e uma uretra`,
+      `Dois rins, um ureter, uma bexiga urinária e duas uretras`,
+      `Dois rins, dois brônquios, uma bexiga urinária e uma uretra`
+    ],
+    correct: 1,
+    explanation: `O sistema urinário é composto por dois rins, dois ureteres, uma bexiga urinária e uma uretra.`
+  },
+  {
+    id: `URI-07`,
+    system: `Sistema Urinário`,
+    prompt: `Em relação às funções da bexiga urinária e da uretra, é correto afirmar que:`,
+    options: [
+      `A bexiga realiza a filtração glomerular e a uretra reabsorve glicose`,
+      `A bexiga é um reservatório muscular temporário para a urina e a uretra é o canal de condução para o meio externo`,
+      `A uretra armazena a urina por várias horas e a bexiga a transporta dos rins até os ureteres`,
+      `Ambas produzem urina a partir dos alvéolos pulmonares`
+    ],
+    correct: 1,
+    explanation: `A bexiga urinária funciona como reservatório muscular temporário para a urina, enquanto a uretra conduz a urina da bexiga para o meio externo.`
+  },
+  {
+    id: `URI-08`,
+    system: `Sistema Urinário`,
+    prompt: `Quanto ao aspecto anatômico e às dimensões aproximadas, os rins humanos apresentam:`,
+    options: [
+      `Coloração marrom-avermelhada, formato de grão de feijão e cerca de 11 a 13 cm de comprimento`,
+      `Coloração esbranquiçada, formato cúbico e cerca de 30 cm de comprimento`,
+      `Formato espiralado e tamanho idêntico ao da bexiga vazia`,
+      `Textura córnea e espessura inferior a 1 cm`
+    ],
+    correct: 0,
+    explanation: `Os rins são dois órgãos de coloração marrom-avermelhada, em forma de grão de feijão, com cerca de 11 a 13 cm de comprimento.`
+  },
+  {
+    id: `URI-09`,
+    system: `Sistema Urinário`,
+    prompt: `Comparando o rim esquerdo ao rim direito quanto ao tamanho, o que aponta a anatomia humana?`,
+    options: [
+      `O rim direito é sempre o dobro do rim esquerdo`,
+      `O rim esquerdo é um pouco mais longo e maior que o rim direito`,
+      `Ambos possuem exatamente o mesmo comprimento e posição`,
+      `Apenas o rim direito possui néfrons funcionais`
+    ],
+    correct: 1,
+    explanation: `De acordo com o material de aula, o rim esquerdo é um pouco mais longo e maior que o rim direito.`
+  },
+  {
+    id: `URI-10`,
+    system: `Sistema Urinário`,
+    prompt: `Qual é a localização anatômica dos rins no corpo humano?`,
+    options: [
+      `Na região anterior do tórax, acima do diafragma`,
+      `Na região posterior do abdômen, atrás do peritônio`,
+      `No interior da cavidade pélvica, abaixo da uretra`,
+      `Na tela subcutânea da região ventral do pescoço`
+    ],
+    correct: 1,
+    explanation: `Os rins localizam-se na região posterior do abdômen, atrás do peritônio (posição retroperitoneal).`
+  },
+  {
+    id: `URI-11`,
+    system: `Sistema Urinário`,
+    prompt: `Como se denomina a unidade funcional do rim e qual é a quantidade aproximada presente em cada rim?`,
+    options: [
+      `Néfron; cerca de 1 milhão por rim`,
+      `Alvéolo; cerca de 200 por rim`,
+      `Glândula sebácea; de 2 a 20 por rim`,
+      `Corpúsculo gustativo; cerca de 10 mil por rim`
+    ],
+    correct: 0,
+    explanation: `O néfron é a unidade funcional do rim, responsável pela filtração, reabsorção e secreção; cada rim possui cerca de 1 milhão de néfrons.`
+  },
+  {
+    id: `URI-12`,
+    system: `Sistema Urinário`,
+    prompt: `No néfron, o Corpúsculo Renal é constituído por quais duas estruturas?`,
+    options: [
+      `Ureter e bexiga urinária`,
+      `Glomérulo e Cápsula de Bowman`,
+      `Alça de Henle e uretra`,
+      `Faringe e laringe`
+    ],
+    correct: 1,
+    explanation: `O corpúsculo renal do néfron é formado pela associação entre o Glomérulo e a Cápsula de Bowman.`
+  },
+  {
+    id: `URI-13`,
+    system: `Sistema Urinário`,
+    prompt: `Quais segmentos formam os Túbulos Renais no interior do néfron?`,
+    options: [
+      `Túbulo contorcido proximal, Alça de Henle e túbulo contorcido distal`,
+      `Brônquio principal, bronquíolo e alvéolo pulmonar`,
+      `Raiz, corpo e borda livre`,
+      `Pavilhão auditivo, canal auditivo e tímpano`
+    ],
+    correct: 0,
+    explanation: `Os túbulos renais do néfron são compostos pelo túbulo contorcido proximal, pela Alça de Henle e pelo túbulo contorcido distal.`
+  },
+  {
+    id: `URI-14`,
+    system: `Sistema Urinário`,
+    prompt: `Na fisiologia da formação da urina, o que distingue a Filtração Glomerular da Reabsorção Tubular?`,
+    options: [
+      `Na filtração glomerular passam água e solutos do sangue para a cápsula; na reabsorção tubular retornam substâncias úteis (como água e glicose) para o sangue`,
+      `Na filtração passam hemácias para a urina; na reabsorção a ureia é devolvida às artérias`,
+      `A filtração ocorre na bexiga e a reabsorção ocorre na uretra`,
+      `Na filtração ocorre eliminação de gás carbônico e na reabsorção há entrada de oxigênio`
+    ],
+    correct: 0,
+    explanation: `Na etapa 1 (Filtração Glomerular), água e solutos passam do sangue para a cápsula; na etapa 2 (Reabsorção Tubular), substâncias úteis como água e glicose retornam ao sangue.`
+  },
+  {
+    id: `URI-15`,
+    system: `Sistema Urinário`,
+    prompt: `Qual evento fisiológico caracteriza a terceira etapa da formação da urina, chamada Secreção Tubular?`,
+    options: [
+      `Passagem das plaquetas para a cápsula de Bowman`,
+      `Transferência de resíduos diretamente do sangue para os túbulos renais`,
+      `Armazenamento definitivo da urina no interior dos ureteres`,
+      `Conversão do pH sanguíneo no bulbo encefálico`
+    ],
+    correct: 1,
+    explanation: `Na etapa 3 (Secreção Tubular), ocorre a transferência de resíduos adicionais do sangue para os túbulos renais antes da eliminação da urina.`
+  }
+];
+
+const QUIZ_SIZE = 30;
+const LETTERS = [`A`, `B`, `C`, `D`];
+const SYSTEMS = [
+  `Sistema Tegumentar`,
+  `Sistema Sensorial`,
+  `Sistema Respiratório`,
+  `Sistema Urinário`
+];
+
+let appState = {
+  phase: `start`, // 'start' | 'quiz' | 'results'
+  isFinished: false,
+  activeIds: [], // 30 question IDs
+  answers: {}, // { [questionId]: optionIndex }
+  currentIndex: 0,
+  lastAttemptIds: [],
+  reviewFilterStatus: `all`, // 'all' | 'correct' | 'wrong'
+  reviewFilterSystem: `all`,
+  history: [] // { id, dateStr, correctCount, total, pct, gradeStr }
+};
+
+function getQuestionById(id) {
+  for (let i = 0; i < QUESTION_BANK.length; i++) {
+    if (QUESTION_BANK[i].id === id) return QUESTION_BANK[i];
+  }
+  return null;
+}
+
+function shuffleIds(array) {
+  const copy = array.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = copy[i];
+    copy[i] = copy[j];
+    copy[j] = tmp;
+  }
+  return copy;
+}
+
+function drawRandom30Ids(previousIds) {
+  const allIds = QUESTION_BANK.map(function (q) { return q.id; });
+  let picked = shuffleIds(allIds).slice(0, QUIZ_SIZE);
+  if (Array.isArray(previousIds) && previousIds.length === QUIZ_SIZE) {
+    const prevSet = {};
+    for (let i = 0; i < previousIds.length; i++) {
+      prevSet[previousIds[i]] = true;
+    }
+    let sameCount = 0;
+    for (let i = 0; i < picked.length; i++) {
+      if (prevSet[picked[i]]) sameCount++;
+    }
+    if (sameCount === QUIZ_SIZE) {
+      picked = shuffleIds(allIds).slice(0, QUIZ_SIZE);
+    }
+  }
+  return picked;
+}
+
+function countOverlap(newIds, prevIds) {
+  if (!Array.isArray(prevIds) || prevIds.length === 0) return 0;
+  const prevSet = {};
+  for (let i = 0; i < prevIds.length; i++) prevSet[prevIds[i]] = true;
+  let overlap = 0;
+  for (let i = 0; i < newIds.length; i++) {
+    if (prevSet[newIds[i]]) overlap++;
+  }
+  return overlap;
+}
+
+async function persistState() {
+  if (!window.notebookAppApi || typeof window.notebookAppApi.setAppState !== `function`) return;
+  try {
+    await window.notebookAppApi.setAppState({
+      phase: appState.phase,
+      isFinished: appState.isFinished,
+      activeIds: appState.activeIds,
+      answers: appState.answers,
+      currentIndex: appState.currentIndex,
+      lastAttemptIds: appState.lastAttemptIds,
+      history: appState.history
+    });
+  } catch (err) {
+    // Non-fatal persistence error
+  }
+}
+
+function countAnswered() {
+  let count = 0;
+  for (let i = 0; i < appState.activeIds.length; i++) {
+    const qid = appState.activeIds[i];
+    if (typeof appState.answers[qid] === `number`) count++;
+  }
+  return count;
+}
+
+function refreshIcons() {
+  if (window.lucide && typeof window.lucide.createIcons === `function`) {
+    window.lucide.createIcons();
+  }
+}
+
+function showView(phase) {
+  appState.phase = phase;
+  const vStart = document.getElementById(`view-start`);
+  const vQuiz = document.getElementById(`view-quiz`);
+  const vResults = document.getElementById(`view-results`);
+  if (vStart) vStart.classList.toggle(`hidden`, phase !== `start`);
+  if (vQuiz) vQuiz.classList.toggle(`hidden`, phase !== `quiz`);
+  if (vResults) vResults.classList.toggle(`hidden`, phase !== `results`);
+
+  const statusChip = document.getElementById(`session-status-chip`);
+  if (statusChip) {
+    if (phase === `start`) {
+      statusChip.textContent = `Banco com 60 questões`;
+      statusChip.setAttribute(`data-status`, `info`);
+    } else if (phase === `quiz`) {
+      statusChip.textContent = `Simulado em andamento`;
+      statusChip.setAttribute(`data-status`, `warn`);
+    } else {
+      statusChip.textContent = `Simulado finalizado`;
+      statusChip.setAttribute(`data-status`, `ok`);
+    }
+  }
+}
+
+function renderStartView() {
+  const resumeCallout = document.getElementById(`resume-callout`);
+  const resumeText = document.getElementById(`resume-callout-text`);
+  const btnResume = document.getElementById(`btn-resume-quiz`);
+  const hasSavedQuiz = !appState.isFinished && Array.isArray(appState.activeIds) && appState.activeIds.length === QUIZ_SIZE;
+  const answered = countAnswered();
+
+  if (hasSavedQuiz && answered > 0) {
+    if (resumeCallout) resumeCallout.classList.remove(`hidden`);
+    if (resumeText) {
+      resumeText.textContent = `Você possui uma tentativa com ${answered} de ${QUIZ_SIZE} questões respondidas. Pode continuar de onde parou ou iniciar um novo sorteio.`;
+    }
+    if (btnResume) btnResume.classList.remove(`hidden`);
+  } else {
+    if (resumeCallout) resumeCallout.classList.add(`hidden`);
+    if (btnResume) btnResume.classList.add(`hidden`);
+  }
+
+  const historySection = document.getElementById(`history-section`);
+  const historyBody = document.getElementById(`history-table-body`);
+  if (historySection && historyBody) {
+    if (appState.history.length > 0) {
+      historySection.classList.remove(`hidden`);
+      let rowsHtml = ``;
+      for (let i = appState.history.length - 1; i >= 0; i--) {
+        const item = appState.history[i];
+        const statusAttr = item.pct >= 70 ? `` : (item.pct >= 50 ? `warn` : `alert`);
+        const statusLabel = item.pct >= 70 ? `Aprovado` : (item.pct >= 50 ? `Atenção` : `Revisar`);
+        rowsHtml += `<tr>
+          <td>#${item.attemptNum}</td>
+          <td>${item.dateStr}</td>
+          <td>${item.correctCount} / ${item.total} (${item.pct}%)</td>
+          <td><strong>${item.gradeStr}</strong></td>
+          <td><span class="chip" data-status="${statusAttr}">${statusLabel}</span></td>
+        </tr>`;
+      }
+      historyBody.innerHTML = rowsHtml;
+    } else {
+      historySection.classList.add(`hidden`);
+    }
+  }
+  refreshIcons();
+}
+
+function startNewQuiz() {
+  const previousIds = appState.activeIds.length === QUIZ_SIZE ? appState.activeIds : appState.lastAttemptIds;
+  const newIds = drawRandom30Ids(previousIds);
+  const overlap = countOverlap(newIds, previousIds);
+  const novelCount = QUIZ_SIZE - overlap;
+
+  appState.isFinished = false;
+  appState.activeIds = newIds;
+  appState.answers = {};
+  appState.currentIndex = 0;
+  appState.reviewFilterStatus = `all`;
+  appState.reviewFilterSystem = `all`;
+
+  showView(`quiz`);
+  renderQuizView();
+
+  const banner = document.getElementById(`quiz-banner-msg`);
+  if (banner) {
+    if (previousIds.length === QUIZ_SIZE) {
+      banner.classList.remove(`hidden`);
+      banner.setAttribute(`data-status`, `ok`);
+      banner.innerHTML = `<strong>Novo simulado sorteado!</strong> Foram selecionadas 30 questões aleatórias do banco de 60 (${novelCount} inéditas em relação à tentativa anterior).`;
+    } else {
+      banner.classList.add(`hidden`);
+    }
+  }
+  persistState();
+  window.scrollTo({ top: 0, behavior: `smooth` });
+}
+
+function resumeSavedQuiz() {
+  if (!Array.isArray(appState.activeIds) || appState.activeIds.length !== QUIZ_SIZE) {
+    startNewQuiz();
+    return;
+  }
+  showView(`quiz`);
+  renderQuizView();
+  const banner = document.getElementById(`quiz-banner-msg`);
+  if (banner) banner.classList.add(`hidden`);
+}
+
+function renderQuizView() {
+  const qid = appState.activeIds[appState.currentIndex];
+  const q = getQuestionById(qid);
+  if (!q) return;
+
+  const answered = countAnswered();
+  const pct = Math.round((answered / QUIZ_SIZE) * 100);
+
+  const stepLabel = document.getElementById(`quiz-step-label`);
+  if (stepLabel) stepLabel.textContent = `Questão ${appState.currentIndex + 1} de ${QUIZ_SIZE}`;
+
+  const answeredChip = document.getElementById(`quiz-answered-chip`);
+  if (answeredChip) {
+    answeredChip.textContent = `${answered} de ${QUIZ_SIZE} respondidas`;
+    answeredChip.setAttribute(`data-status`, answered === QUIZ_SIZE ? `` : `info`);
+  }
+
+  const progressFill = document.getElementById(`quiz-progress-fill`);
+  if (progressFill) progressFill.style.width = `${pct}%`;
+
+  const qCard = document.getElementById(`question-card`);
+  const chosenIndex = appState.answers[qid];
+  const isAnswered = typeof chosenIndex === `number`;
+  if (qCard) qCard.setAttribute(`data-status`, isAnswered ? `ok` : `info`);
+
+  const qCounter = document.getElementById(`q-counter`);
+  if (qCounter) {
+    const numStr = appState.currentIndex + 1 < 10 ? `0${appState.currentIndex + 1}` : `${appState.currentIndex + 1}`;
+    qCounter.textContent = `Questão ${numStr} / ${QUIZ_SIZE}`;
+  }
+
+  const qSystemChip = document.getElementById(`q-system-chip`);
+  if (qSystemChip) qSystemChip.textContent = q.system;
+
+  const qPrompt = document.getElementById(`q-prompt`);
+  if (qPrompt) qPrompt.textContent = q.prompt;
+
+  const qOptions = document.getElementById(`q-options`);
+  if (qOptions) {
+    let html = ``;
+    for (let i = 0; i < q.options.length; i++) {
+      const checked = chosenIndex === i ? `true` : `false`;
+      html += `<button type="button" class="option-btn" role="radio" aria-checked="${checked}" onclick="selectOption(${i})">
+        <span class="option-letter">${LETTERS[i]}</span>
+        <span>${q.options[i]}</span>
+      </button>`;
+    }
+    qOptions.innerHTML = html;
+  }
+
+  const btnPrev = document.getElementById(`btn-prev`);
+  if (btnPrev) btnPrev.disabled = appState.currentIndex === 0;
+
+  const btnNext = document.getElementById(`btn-next`);
+  if (btnNext) {
+    btnNext.disabled = appState.currentIndex === QUIZ_SIZE - 1;
+  }
+
+  // Reset inline confirm state on mid-quiz redo button when moving
+  const redoBtn = document.getElementById(`btn-reshuffle-mid`);
+  if (redoBtn && redoBtn.dataset.armed === `true`) {
+    redoBtn.dataset.armed = `false`;
+    redoBtn.innerHTML = `<i data-lucide="shuffle" aria-hidden="true" width="16" height="16"></i> Refazer teste`;
+  }
+
+  renderNavigator();
+  refreshIcons();
+}
+
+function renderNavigator() {
+  const navGrid = document.getElementById(`navigator-grid`);
+  if (!navGrid) return;
+  let html = ``;
+  for (let i = 0; i < appState.activeIds.length; i++) {
+    const qid = appState.activeIds[i];
+    const isCurrent = i === appState.currentIndex;
+    const isAns = typeof appState.answers[qid] === `number`;
+    let cls = `nav-dot`;
+    if (isAns) cls += ` answered`;
+    if (isCurrent) cls += ` current`;
+    const ariaLabel = `Ir para questão ${i + 1}${isAns ? ` (respondida)` : ` (pendente)`}`;
+    html += `<button type="button" class="${cls}" aria-label="${ariaLabel}" onclick="jumpToQuestion(${i})">${i + 1}</button>`;
+  }
+  navGrid.innerHTML = html;
+}
+
+function selectOption(optionIdx) {
+  const qid = appState.activeIds[appState.currentIndex];
+  if (!qid) return;
+  appState.answers[qid] = optionIdx;
+  const banner = document.getElementById(`quiz-banner-msg`);
+  if (banner) banner.classList.add(`hidden`);
+  renderQuizView();
+  persistState();
+}
+
+function goToPrevQuestion() {
+  if (appState.currentIndex > 0) {
+    appState.currentIndex--;
+    renderQuizView();
+    persistState();
+  }
+}
+
+function goToNextQuestion() {
+  if (appState.currentIndex < QUIZ_SIZE - 1) {
+    appState.currentIndex++;
+    renderQuizView();
+    persistState();
+  }
+}
+
+function jumpToQuestion(idx) {
+  if (idx >= 0 && idx < QUIZ_SIZE) {
+    appState.currentIndex = idx;
+    renderQuizView();
+    persistState();
+  }
+}
+
+function jumpToNextUnanswered() {
+  for (let offset = 1; offset <= QUIZ_SIZE; offset++) {
+    const idx = (appState.currentIndex + offset) % QUIZ_SIZE;
+    const qid = appState.activeIds[idx];
+    if (typeof appState.answers[qid] !== `number`) {
+      appState.currentIndex = idx;
+      renderQuizView();
+      persistState();
+      return;
+    }
+  }
+  const banner = document.getElementById(`quiz-banner-msg`);
+  if (banner) {
+    banner.classList.remove(`hidden`);
+    banner.setAttribute(`data-status`, `ok`);
+    banner.innerHTML = `<strong>Todas as 30 questões foram respondidas!</strong> Você já pode clicar em Finalizar teste para ver sua nota e o gabarito comentado.`;
+  }
+}
+
+function handleMidQuizRedo(btn) {
+  const answered = countAnswered();
+  if (answered > 0 && btn.dataset.armed !== `true`) {
+    btn.dataset.armed = `true`;
+    btn.textContent = `Confirmar novo sorteio?`;
+    return;
+  }
+  btn.dataset.armed = `false`;
+  startNewQuiz();
+}
+
+function attemptFinishQuiz() {
+  const answered = countAnswered();
+  const pending = QUIZ_SIZE - answered;
+  if (pending > 0) {
+    const banner = document.getElementById(`quiz-banner-msg`);
+    if (banner) {
+      banner.classList.remove(`hidden`);
+      banner.setAttribute(`data-status`, `warn`);
+      banner.innerHTML = `
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap: var(--space-sm);">
+          <span><strong>Atenção:</strong> ainda ${pending === 1 ? `falta 1 questão sem resposta` : `faltam ${pending} questões sem resposta`}. Questões em branco serão contabilizadas como erro.</span>
+          <span class="button-row">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="jumpToNextUnanswered()">Ir para pendente</button>
+            <button type="button" class="btn btn-danger-outline btn-sm" onclick="finalizeQuizNow()">Entregar assim mesmo</button>
+          </span>
+        </div>`;
+    }
+    return;
+  }
+  finalizeQuizNow();
+}
+
+function finalizeQuizNow() {
+  let correctCount = 0;
+  for (let i = 0; i < appState.activeIds.length; i++) {
+    const qid = appState.activeIds[i];
+    const q = getQuestionById(qid);
+    if (q && appState.answers[qid] === q.correct) {
+      correctCount++;
+    }
+  }
+
+  const pct = Math.round((correctCount / QUIZ_SIZE) * 100);
+  const gradeNum = (correctCount / QUIZ_SIZE) * 10;
+  const gradeStr = gradeNum.toFixed(1).replace(`.`, `,`);
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString(`pt-BR`) + ` ` + now.toLocaleTimeString(`pt-BR`, { hour: `2-digit`, minute: `2-digit` });
+
+  appState.isFinished = true;
+  appState.lastAttemptIds = appState.activeIds.slice();
+  appState.history.push({
+    attemptNum: appState.history.length + 1,
+    dateStr: dateStr,
+    correctCount: correctCount,
+    total: QUIZ_SIZE,
+    pct: pct,
+    gradeStr: gradeStr
+  });
+  if (appState.history.length > 10) {
+    appState.history = appState.history.slice(appState.history.length - 10);
+  }
+
+  appState.reviewFilterStatus = `all`;
+  appState.reviewFilterSystem = `all`;
+  showView(`results`);
+  renderResultsView();
+  persistState();
+  window.scrollTo({ top: 0, behavior: `smooth` });
+}
+
+function computeResultsMetrics() {
+  let correctCount = 0;
+  let wrongCount = 0;
+  const bySystem = {};
+  for (let s = 0; s < SYSTEMS.length; s++) {
+    bySystem[SYSTEMS[s]] = { correct: 0, total: 0 };
+  }
+
+  for (let i = 0; i < appState.activeIds.length; i++) {
+    const qid = appState.activeIds[i];
+    const q = getQuestionById(qid);
+    if (!q) continue;
+    bySystem[q.system].total++;
+    if (appState.answers[qid] === q.correct) {
+      correctCount++;
+      bySystem[q.system].correct++;
+    } else {
+      wrongCount++;
+    }
+  }
+
+  const pct = Math.round((correctCount / QUIZ_SIZE) * 100);
+  const gradeStr = ((correctCount / QUIZ_SIZE) * 10).toFixed(1).replace(`.`, `,`);
+  return { correctCount, wrongCount, pct, gradeStr, bySystem };
+}
+
+function renderResultsView() {
+  const metrics = computeResultsMetrics();
+  const statusTier = metrics.pct >= 70 ? `ok` : (metrics.pct >= 50 ? `warn` : `alert`);
+
+  const heroCard = document.getElementById(`results-hero-card`);
+  if (heroCard) heroCard.setAttribute(`data-status`, statusTier);
+
+  const verdictChip = document.getElementById(`result-verdict-chip`);
+  if (verdictChip) {
+    verdictChip.setAttribute(`data-status`, statusTier === `ok` ? `` : statusTier);
+    if (statusTier === `ok`) {
+      verdictChip.textContent = `Meta atingida (≥ 70%)`;
+    } else if (statusTier === `warn`) {
+      verdictChip.textContent = `Desempenho regular — revisar lacunas`;
+    } else {
+      verdictChip.textContent = `Abaixo da meta — reforçar revisão`;
+    }
+  }
+
+  const summaryText = document.getElementById(`result-summary-text`);
+  if (summaryText) {
+    summaryText.textContent = `Você acertou ${metrics.correctCount} de ${QUIZ_SIZE} questões sorteadas (${metrics.pct}%), obtendo nota ${metrics.gradeStr}. Confira abaixo o desempenho por sistema e o gabarito comentado.`;
+  }
+
+  const kpiGradeCard = document.getElementById(`kpi-grade-card`);
+  const kpiPctCard = document.getElementById(`kpi-pct-card`);
+  if (kpiGradeCard) kpiGradeCard.setAttribute(`data-status`, statusTier);
+  if (kpiPctCard) kpiPctCard.setAttribute(`data-status`, statusTier);
+
+  const kpiGrade = document.getElementById(`kpi-grade`);
+  const kpiGradeCap = document.getElementById(`kpi-grade-caption`);
+  if (kpiGrade) kpiGrade.textContent = metrics.gradeStr;
+  if (kpiGradeCap) {
+    kpiGradeCap.className = `kpi-caption ${statusTier}`;
+    kpiGradeCap.textContent = metrics.pct >= 70 ? `Acima da referência (7,0)` : `Abaixo da referência (7,0)`;
+  }
+
+  const kpiPct = document.getElementById(`kpi-pct`);
+  const kpiPctCap = document.getElementById(`kpi-pct-caption`);
+  if (kpiPct) kpiPct.textContent = `${metrics.pct}%`;
+  if (kpiPctCap) {
+    kpiPctCap.className = `kpi-caption ${statusTier}`;
+    kpiPctCap.textContent = `${metrics.correctCount} de ${QUIZ_SIZE} acertos`;
+  }
+
+  const kpiWrong = document.getElementById(`kpi-wrong`);
+  if (kpiWrong) kpiWrong.textContent = `${metrics.wrongCount}`;
+
+  const countAll = document.getElementById(`count-all`);
+  const countCorrect = document.getElementById(`count-correct`);
+  const countWrong = document.getElementById(`count-wrong`);
+  if (countAll) countAll.textContent = `${QUIZ_SIZE}`;
+  if (countCorrect) countCorrect.textContent = `${metrics.correctCount}`;
+  if (countWrong) countWrong.textContent = `${metrics.wrongCount}`;
+
+  const sysSelect = document.getElementById(`filter-system-select`);
+  if (sysSelect) sysSelect.value = appState.reviewFilterSystem;
+
+  updateStatusFilterPills();
+  renderSystemChart(metrics.bySystem);
+  renderReviewList();
+  refreshIcons();
+}
+
+function renderSystemChart(bySystem) {
+  const wrap = document.getElementById(`system-chart-wrap`);
+  if (!wrap) return;
+
+  const width = 680;
+  const height = 220;
+  const leftPad = 178;
+  const rightPad = 76;
+  const plotW = width - leftPad - rightPad;
+  const topPad = 24;
+  const rowH = 44;
+
+  const targetX = leftPad + (0.7 * plotW);
+  const bandW = 0.3 * plotW;
+
+  let svgRows = ``;
+  for (let i = 0; i < SYSTEMS.length; i++) {
+    const sysName = SYSTEMS[i];
+    const stat = bySystem[sysName];
+    const pct = stat.total > 0 ? Math.round((stat.correct / stat.total) * 100) : 0;
+    const barW = pct > 0 ? Math.max(4, (pct / 100) * plotW) : 0;
+    const y = topPad + i * rowH;
+    const fillToken = pct >= 70 ? `var(--tertiary)` : (pct >= 50 ? `var(--data-3)` : `var(--error)`);
+
+    svgRows += `
+      <text x="${leftPad - 12}" y="${y + 18}" text-anchor="end" fill="var(--on-surface)" font-family="var(--font-label)" font-size="13" font-weight="600">${sysName}</text>
+      <rect x="${leftPad}" y="${y + 4}" width="${plotW}" height="20" rx="3" fill="var(--surface-container-low)"></rect>
+      <rect x="${leftPad}" y="${y + 4}" width="${barW}" height="20" rx="3" fill="${fillToken}"></rect>
+      <text x="${leftPad + plotW + 10}" y="${y + 19}" fill="var(--on-surface)" font-family="var(--font-label)" font-size="13" font-weight="700">${pct}% (${stat.correct}/${stat.total})</text>
+    `;
+  }
+
+  wrap.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" height="auto" role="img" aria-label="Gráfico de porcentagem de acertos por sistema anatômico comparado à meta de 70%">
+      <rect class="range-band" x="${targetX}" y="${topPad - 4}" width="${bandW}" height="${SYSTEMS.length * rowH}"></rect>
+      <line x1="${targetX}" y1="${topPad - 8}" x2="${targetX}" y2="${topPad + SYSTEMS.length * rowH - 2}" stroke="var(--outline)" stroke-width="1.5" stroke-dasharray="4 3"></line>
+      <text x="${targetX}" y="${topPad - 11}" text-anchor="middle" fill="var(--on-surface-variant)" font-family="var(--font-label)" font-size="11" font-weight="600">Meta 70%</text>
+      ${svgRows}
+    </svg>
+  `;
+}
+
+function updateStatusFilterPills() {
+  const pills = document.querySelectorAll(`[data-filter-status]`);
+  for (let i = 0; i < pills.length; i++) {
+    const val = pills[i].getAttribute(`data-filter-status`);
+    pills[i].setAttribute(`aria-pressed`, val === appState.reviewFilterStatus ? `true` : `false`);
+  }
+}
+
+function setReviewStatusFilter(val) {
+  appState.reviewFilterStatus = val;
+  updateStatusFilterPills();
+  renderReviewList();
+}
+
+function setReviewSystemFilter(val) {
+  appState.reviewFilterSystem = val;
+  renderReviewList();
+}
+
+function renderReviewList() {
+  const listEl = document.getElementById(`review-list`);
+  if (!listEl) return;
+
+  let html = ``;
+  let shownCount = 0;
+
+  for (let i = 0; i < appState.activeIds.length; i++) {
+    const qid = appState.activeIds[i];
+    const q = getQuestionById(qid);
+    if (!q) continue;
+
+    const chosen = appState.answers[qid];
+    const isAnswered = typeof chosen === `number`;
+    const isCorrect = isAnswered && chosen === q.correct;
+
+    if (appState.reviewFilterStatus === `correct` && !isCorrect) continue;
+    if (appState.reviewFilterStatus === `wrong` && isCorrect) continue;
+    if (appState.reviewFilterSystem !== `all` && q.system !== appState.reviewFilterSystem) continue;
+
+    shownCount++;
+    const statusAttr = isCorrect ? `ok` : `alert`;
+    const chipAttr = isCorrect ? `` : `alert`;
+    const chipText = isCorrect ? `Correta` : (isAnswered ? `Incorreta` : `Não respondida`);
+
+    let optionsHtml = ``;
+    for (let j = 0; j < q.options.length; j++) {
+      let optCls = `review-option`;
+      let badgeHtml = ``;
+      if (j === q.correct) {
+        optCls += ` correct-answer`;
+        badgeHtml = `<span class="chip">Gabarito correto</span>`;
+      } else if (isAnswered && j === chosen && j !== q.correct) {
+        optCls += ` wrong-chosen`;
+        badgeHtml = `<span class="chip" data-status="alert">Sua resposta</span>`;
+      }
+      if (isCorrect && j === chosen) {
+        badgeHtml = `<span class="chip">Sua resposta (correta)</span>`;
+      }
+      optionsHtml += `<div class="${optCls}">
+        <span><strong>${LETTERS[j]})</strong> ${q.options[j]}</span>
+        ${badgeHtml}
+      </div>`;
+    }
+
+    html += `<article class="status-card review-card" data-status="${statusAttr}">
+      <div class="question-header">
+        <span class="question-number">Questão ${i + 1} de ${QUIZ_SIZE} · Código ${q.id}</span>
+        <div class="button-row">
+          <span class="chip" data-status="info">${q.system}</span>
+          <span class="chip" data-status="${chipAttr}">${chipText}</span>
+        </div>
+      </div>
+      <p style="margin: 0; font-weight: 700; color: var(--on-surface);">${q.prompt}</p>
+      <div class="review-options">${optionsHtml}</div>
+      <div class="review-explanation">
+        <strong>Explicação:</strong> ${q.explanation}
+      </div>
+    </article>`;
+  }
+
+  if (shownCount === 0) {
+    html = `<div class="surface-card" style="text-align: center; color: var(--on-surface-variant);">
+      Nenhuma questão corresponde aos filtros selecionados. Ajuste os filtros acima para visualizar o gabarito.
+    </div>`;
+  }
+
+  listEl.innerHTML = html;
+}
+
+function redoQuizWithNewDraw() {
+  startNewQuiz();
+}
+
+function goToStartScreen() {
+  showView(`start`);
+  renderStartView();
+  window.scrollTo({ top: 0, behavior: `smooth` });
+}
+
+function clearAttemptHistory(btn) {
+  if (btn.dataset.armed !== `true`) {
+    btn.dataset.armed = `true`;
+    btn.textContent = `Confirmar limpeza?`;
+    return;
+  }
+  btn.dataset.armed = `false`;
+  btn.innerHTML = `<i data-lucide="trash-2" aria-hidden="true" width="16" height="16"></i> Limpar histórico`;
+  appState.history = [];
+  renderStartView();
+  persistState();
+}
+
+function exportReviewTxt() {
+  const metrics = computeResultsMetrics();
+  const lines = [
+    `SIMULADO DE ANATOMIA E FISIOLOGIA — TÉCNICO EM ENFERMAGEM`,
+    `Nota: ${metrics.gradeStr} | Acertos: ${metrics.correctCount}/${QUIZ_SIZE} (${metrics.pct}%)`,
+    `====================================================================`,
+    ``
+  ];
+
+  for (let i = 0; i < appState.activeIds.length; i++) {
+    const qid = appState.activeIds[i];
+    const q = getQuestionById(qid);
+    if (!q) continue;
+    const chosen = appState.answers[qid];
+    const chosenStr = typeof chosen === `number` ? `${LETTERS[chosen]}) ${q.options[chosen]}` : `Não respondida`;
+    const correctStr = `${LETTERS[q.correct]}) ${q.options[q.correct]}`;
+    const resultStr = chosen === q.correct ? `CORRETA` : `INCORRETA`;
+
+    lines.push(`Questão ${i + 1} [${q.system} · ${q.id}] — ${resultStr}`);
+    lines.push(q.prompt);
+    lines.push(`Sua resposta: ${chosenStr}`);
+    lines.push(`Gabarito: ${correctStr}`);
+    lines.push(`Explicação: ${q.explanation}`);
+    lines.push(``);
+  }
+
+  const content = lines.join(`\n`);
+  if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === `function`) {
+    window.notebookAppApi.triggerFileDownload({
+      content: content,
+      contentType: `text/plain`,
+      encoding: `UTF-8`,
+      filename: `gabarito-simulado-enfermagem.txt`
+    });
+  }
+}
+
+async function initApp() {
+  try {
+    if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
+      const saved = await window.notebookAppApi.getAppState();
+      if (saved && typeof saved === `object`) {
+        appState.isFinished = Boolean(saved.isFinished);
+        if (Array.isArray(saved.activeIds)) appState.activeIds = saved.activeIds;
+        if (saved.answers && typeof saved.answers === `object`) appState.answers = saved.answers;
+        if (typeof saved.currentIndex === `number`) appState.currentIndex = saved.currentIndex;
+        if (Array.isArray(saved.lastAttemptIds)) appState.lastAttemptIds = saved.lastAttemptIds;
+        if (Array.isArray(saved.history)) appState.history = saved.history;
+        if (saved.phase === `results` && appState.isFinished && appState.activeIds.length === QUIZ_SIZE) {
+          appState.phase = `results`;
+        } else {
+          appState.phase = `start`;
+        }
+      }
+    }
+  } catch (err) {
+    appState.phase = `start`;
+  }
+
+  if (appState.phase === `results` && appState.activeIds.length === QUIZ_SIZE) {
+    showView(`results`);
+    renderResultsView();
+  } else {
+    showView(`start`);
+    renderStartView();
+  }
+
+  if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === `function`) {
+    window.notebookAppApi.notifyAppReady();
+  }
+}
+
+document.addEventListener(`DOMContentLoaded`, initApp);
+</script>
+</body>
+</html>
